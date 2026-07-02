@@ -1,0 +1,170 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Events — Star Queen Cafe, Beed{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="container position-relative">
+    <div class="section-subtitle">Celebrate With Us</div>
+    <h1 class="page-hero-title section-title">Special Events</h1>
+    <div class="gold-divider"></div>
+    <p style="color:var(--text-muted);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;">
+      Create unforgettable memories at Star Queen Cafe
+    </p>
+  </div>
+</div>
+
+<!-- EVENTS CARDS -->
+<section style="background:var(--black);">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+
+      <!-- Couple Special -->
+      <div class="col-md-6 col-lg-4 fade-in-scroll">
+        <div class="event-card">
+          <span class="event-icon">💑</span>
+          <h3>Couple Special</h3>
+          <div class="gold-divider" style="margin:1rem auto;"></div>
+          <p>
+            Celebrate your love with our exclusive Couple Special package. Enjoy a candlelit table, curated two-course meal, a complimentary dessert platter, and a personalised keepsake — all set in our most intimate corner.
+          </p>
+          <ul style="list-style:none;padding:0;margin-bottom:1.5rem;text-align:left;">
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Candlelit Table Setup
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Curated 2-Course Meal
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Complimentary Dessert Platter
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Personalised Keepsake Card
+            </li>
+          </ul>
+          <a href="{% url 'reservation' %}" class="btn-gold"><span>Book Now</span></a>
+        </div>
+      </div>
+
+      <!-- Italian Night -->
+      <div class="col-md-6 col-lg-4 fade-in-scroll">
+        <div class="event-card" style="border-color:rgba(201,168,76,0.5);">
+          <div style="position:absolute;top:1rem;right:1rem;background:var(--gold);color:var(--black);font-size:0.6rem;font-weight:700;padding:0.3rem 0.7rem;letter-spacing:1.5px;text-transform:uppercase;">Featured</div>
+          <span class="event-icon">🍕</span>
+          <h3>Italian Night</h3>
+          <div class="gold-divider" style="margin:1rem auto;"></div>
+          <p>
+            Every Friday evening, we transform into a little slice of Italy. Enjoy our chef's special Italian menu featuring handcrafted pizzas, pasta, garlic breads, and authentic Italian desserts in a festive atmosphere.
+          </p>
+          <ul style="list-style:none;padding:0;margin-bottom:1.5rem;text-align:left;">
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Chef's Special Italian Menu
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Handcrafted Pizzas & Pasta
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Live Festive Ambience
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Authentic Italian Desserts
+            </li>
+          </ul>
+          <div style="font-size:0.75rem;color:var(--gold);letter-spacing:1px;margin-bottom:1.5rem;">
+            <i class="bi bi-calendar3"></i>&nbsp; Every Friday Evening
+          </div>
+          <a href="{% url 'reservation' %}" class="btn-gold"><span>Reserve a Seat</span></a>
+        </div>
+      </div>
+
+      <!-- Private Events -->
+      <div class="col-md-6 col-lg-4 fade-in-scroll">
+        <div class="event-card">
+          <span class="event-icon">🎉</span>
+          <h3>Private Events</h3>
+          <div class="gold-divider" style="margin:1rem auto;"></div>
+          <p>
+            Celebrate birthdays, anniversaries, corporate gatherings, or any special occasion at Star Queen Cafe. We offer full venue customisation, dedicated staff, and tailored menus to make your event truly extraordinary.
+          </p>
+          <ul style="list-style:none;padding:0;margin-bottom:1.5rem;text-align:left;">
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Full Venue Customisation
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Dedicated Staff & Host
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Tailored Menu Options
+            </li>
+            <li style="color:var(--text-muted);font-size:0.85rem;padding:0.4rem 0;">
+              <i class="bi bi-check2" style="color:var(--gold);"></i>&nbsp; Birthdays, Anniversaries & More
+            </li>
+          </ul>
+          <a href="{% url 'reservation' %}" class="btn-gold"><span>Enquire Now</span></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- WHY CELEBRATE WITH US -->
+<section class="section-dark">
+  <div class="container">
+    <div class="text-center mb-5 fade-in-scroll">
+      <div class="section-subtitle">Why Choose Us</div>
+      <h2 class="section-title">The Star Queen Difference</h2>
+      <div class="gold-divider"></div>
+    </div>
+    <div class="row g-4 text-center">
+      <div class="col-md-3 fade-in-scroll">
+        <div style="padding:2rem 1rem;">
+          <i class="bi bi-gem" style="font-size:2.5rem;color:var(--gold);display:block;margin-bottom:1rem;"></i>
+          <h5 style="color:var(--white);font-family:'Playfair Display',serif;margin-bottom:0.5rem;">Premium Ambience</h5>
+          <p style="color:var(--text-muted);font-size:0.82rem;line-height:1.7;">Elegant interiors that set the perfect mood for any celebration.</p>
+        </div>
+      </div>
+      <div class="col-md-3 fade-in-scroll">
+        <div style="padding:2rem 1rem;">
+          <i class="bi bi-person-check" style="font-size:2.5rem;color:var(--gold);display:block;margin-bottom:1rem;"></i>
+          <h5 style="color:var(--white);font-family:'Playfair Display',serif;margin-bottom:0.5rem;">Dedicated Service</h5>
+          <p style="color:var(--text-muted);font-size:0.82rem;line-height:1.7;">Our team goes above and beyond for every guest.</p>
+        </div>
+      </div>
+      <div class="col-md-3 fade-in-scroll">
+        <div style="padding:2rem 1rem;">
+          <i class="bi bi-camera" style="font-size:2.5rem;color:var(--gold);display:block;margin-bottom:1rem;"></i>
+          <h5 style="color:var(--white);font-family:'Playfair Display',serif;margin-bottom:0.5rem;">Picture Perfect</h5>
+          <p style="color:var(--text-muted);font-size:0.82rem;line-height:1.7;">Every corner is beautifully curated for your memories.</p>
+        </div>
+      </div>
+      <div class="col-md-3 fade-in-scroll">
+        <div style="padding:2rem 1rem;">
+          <i class="bi bi-heart" style="font-size:2.5rem;color:var(--gold);display:block;margin-bottom:1rem;"></i>
+          <h5 style="color:var(--white);font-family:'Playfair Display',serif;margin-bottom:0.5rem;">Made with Love</h5>
+          <p style="color:var(--text-muted);font-size:0.82rem;line-height:1.7;">Every dish and detail crafted with genuine care.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div style="background:var(--dark2);border-top:1px solid var(--border);padding:4rem 0;text-align:center;">
+  <div class="container fade-in-scroll">
+    <h3 style="color:var(--gold);font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:1rem;">
+      Ready to Plan Your Event?
+    </h3>
+    <p style="color:var(--text-muted);font-size:0.9rem;max-width:450px;margin:0 auto 2rem;line-height:1.8;">
+      Contact us or use our reservation form to start planning your perfect event at Star Queen Cafe.
+    </p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="{% url 'reservation' %}" class="btn-gold"><span>Book an Event</span></a>
+      <a href="{% url 'visit' %}" class="btn-outline-gold">Contact Us</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

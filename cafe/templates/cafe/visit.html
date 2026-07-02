@@ -1,0 +1,201 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Visit Us — Star Queen Cafe, Beed{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="container position-relative">
+    <div class="section-subtitle">Come Find Us</div>
+    <h1 class="page-hero-title section-title">Visit Us</h1>
+    <div class="gold-divider"></div>
+    <p style="color:var(--text-muted);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;">
+      We're waiting to welcome you at Star Queen Cafe, Beed
+    </p>
+  </div>
+</div>
+
+<!-- INFO CARDS -->
+<section style="background:var(--black);">
+  <div class="container">
+    <div class="row g-4 mb-5">
+
+      <!-- Address -->
+      <div class="col-md-4 fade-in-scroll">
+        <div class="info-card text-center">
+          <div class="info-icon mx-auto" style="width:60px;height:60px;font-size:1.4rem;">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
+          <h5 style="font-family:'Playfair Display',serif;color:var(--gold);margin-bottom:1rem;">Our Address</h5>
+          <p style="color:var(--text-muted);font-size:0.88rem;line-height:2;">
+            Star Queen Cafe<br>
+            Sarada Capital<br>
+            Near Kajal Sweets<br>
+            DP Road, Beed<br>
+            Maharashtra – 431122
+          </p>
+          <a href="https://maps.google.com/?q=Beed,Maharashtra" target="_blank" class="btn-outline-gold mt-3" style="font-size:0.7rem;">
+            Get Directions
+          </a>
+        </div>
+      </div>
+
+      <!-- Hours -->
+      <div class="col-md-4 fade-in-scroll">
+        <div class="info-card">
+          <div class="info-icon mx-auto" style="width:60px;height:60px;font-size:1.4rem;margin:0 auto 1rem;">
+            <i class="bi bi-clock-fill"></i>
+          </div>
+          <h5 style="font-family:'Playfair Display',serif;color:var(--gold);margin-bottom:1rem;text-align:center;">Opening Hours</h5>
+          <div class="hours-item">
+            <span class="hours-day">Monday</span>
+            <span class="hours-time">10:00 AM – 10:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Tuesday</span>
+            <span class="hours-time">10:00 AM – 10:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Wednesday</span>
+            <span class="hours-time">10:00 AM – 10:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Thursday</span>
+            <span class="hours-time">10:00 AM – 10:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Friday</span>
+            <span class="hours-time">10:00 AM – 11:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Saturday</span>
+            <span class="hours-time">10:00 AM – 11:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Sunday</span>
+            <span class="hours-time">11:00 AM – 10:00 PM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-md-4 fade-in-scroll">
+        <div class="info-card text-center">
+          <div class="info-icon mx-auto" style="width:60px;height:60px;font-size:1.4rem;margin:0 auto 1rem;">
+            <i class="bi bi-telephone-fill"></i>
+          </div>
+          <h5 style="font-family:'Playfair Display',serif;color:var(--gold);margin-bottom:1.5rem;">Get In Touch</h5>
+
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.3rem;">Phone</div>
+            <a href="tel:+918805803111" style="color:var(--white);text-decoration:none;font-size:0.95rem;">+91 8805803111</a>
+          </div>
+
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.3rem;">WhatsApp</div>
+            <a href="https://wa.me/917028709370" target="_blank" style="color:var(--white);text-decoration:none;font-size:0.95rem;">+91 7028709370</a>
+          </div>
+
+          <div style="margin-bottom:2rem;">
+            <div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.3rem;">Email</div>
+            <a href="mailto:starqueencafe@gmail.com" style="color:var(--white);text-decoration:none;font-size:0.88rem;">starqueencafe@gmail.com</a>
+          </div>
+
+          <div style="border-top:1px solid var(--border);padding-top:1.5rem;">
+            <div style="font-size:0.65rem;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.8rem;">Follow Us</div>
+            <div class="social-links d-flex justify-content-center">
+              <a href="#"><i class="bi bi-instagram"></i></a>
+              <a href="#"><i class="bi bi-facebook"></i></a>
+              <a href="#"><i class="bi bi-whatsapp"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOOGLE MAP -->
+    <div class="fade-in-scroll">
+      <div class="cat-header mb-4">
+        <h3 class="gold-text"><i class="bi bi-map me-2"></i>Find Us on the Map</h3>
+        <div class="cat-line"></div>
+      </div>
+      <div class="map-container">
+        <!-- Embedded Google Map centered on Beed, Maharashtra -->
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30298.32!2d75.7595!3d18.9890!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc8c1e4e4b4e4b4%3A0x0!2sBeed%2C%20Maharashtra%20431122!5e0!3m2!1sen!2sin!4v1699999999999!5m2!1sen!2sin"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Star Queen Cafe Location - Beed, Maharashtra">
+        </iframe>
+      </div>
+      <div style="background:var(--dark2);border:1px solid var(--border);border-top:none;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <i class="bi bi-pin-map-fill" style="color:var(--gold);"></i>
+        <span style="color:var(--text-muted);font-size:0.82rem;">
+          Star Queen Cafe, Sarada Capital, Near Kajal Sweets, DP Road, Beed, Maharashtra 431122
+        </span>
+        <a href="https://maps.google.com/?q=Beed+Maharashtra+DP+Road" target="_blank"
+           style="margin-left:auto;color:var(--gold);font-size:0.75rem;text-decoration:none;letter-spacing:1px;text-transform:uppercase;">
+          Open in Google Maps <i class="bi bi-box-arrow-up-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW TO REACH -->
+<section class="section-dark">
+  <div class="container">
+    <div class="text-center mb-5 fade-in-scroll">
+      <div class="section-subtitle">Getting Here</div>
+      <h2 class="section-title">How to Reach Us</h2>
+      <div class="gold-divider"></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4 fade-in-scroll">
+        <div style="padding:2rem;border:1px solid var(--border);height:100%;text-align:center;transition:border-color 0.3s;" class="hover-gold-border">
+          <i class="bi bi-car-front-fill" style="font-size:2rem;color:var(--gold);display:block;margin-bottom:1rem;"></i>
+          <h5 style="font-family:'Playfair Display',serif;color:var(--white);margin-bottom:0.8rem;">By Car / Auto</h5>
+          <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.8;">
+            Located on DP Road, Beed. Ample parking space available near the cafe. Look for the Star Queen signboard near Kajal Sweets.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4 fade-in-scroll">
+        <div style="padding:2rem;border:1px solid var(--border);height:100%;text-align:center;transition:border-color 0.3s;">
+          <i class="bi bi-bus-front-fill" style="font-size:2rem;color:var(--gold);display:block;margin-bottom:1rem;"></i>
+          <h5 style="font-family:'Playfair Display',serif;color:var(--white);margin-bottom:0.8rem;">By Bus / ST</h5>
+          <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.8;">
+            Beed ST Bus Stand is nearby. Take a rickshaw from the bus stand towards DP Road. Ask for Sarada Capital or Kajal Sweets.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4 fade-in-scroll">
+        <div style="padding:2rem;border:1px solid var(--border);height:100%;text-align:center;transition:border-color 0.3s;">
+          <i class="bi bi-signpost-fill" style="font-size:2rem;color:var(--gold);display:block;margin-bottom:1rem;"></i>
+          <h5 style="font-family:'Playfair Display',serif;color:var(--white);margin-bottom:0.8rem;">Landmark</h5>
+          <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.8;">
+            We are located at Sarada Capital building, right next to the famous Kajal Sweets on DP Road in the heart of Beed city.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESERVE CTA -->
+<div style="background:var(--dark2);border-top:1px solid var(--border);padding:4rem 0;text-align:center;">
+  <div class="container fade-in-scroll">
+    <h3 style="color:var(--gold);font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:1rem;">
+      Don't Miss a Table — Reserve Now
+    </h3>
+    <p style="color:var(--text-muted);font-size:0.9rem;max-width:450px;margin:0 auto 2rem;line-height:1.8;">
+      Walk-ins always welcome, but to guarantee your perfect table, book in advance.
+    </p>
+    <a href="{% url 'reservation' %}" class="btn-gold"><span>Make a Reservation</span></a>
+  </div>
+</div>
+
+{% endblock %}

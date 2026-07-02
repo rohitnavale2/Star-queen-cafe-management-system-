@@ -1,0 +1,188 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Pay for Order #{{ order.order_number }} — Star Queen Cafe{% endblock %}
+
+{% block extra_head %}
+<style>
+.pay-page { background:#090702; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; font-family:'Montserrat',sans-serif; }
+.pay-card {
+  background:#110e03; border:1px solid rgba(201,168,76,0.3);
+  max-width:480px; width:100%; position:relative; overflow:hidden;
+}
+.pay-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#7a5010,#c9a84c,#e8d070,#c9a84c); }
+.pay-header { padding:1.8rem 2rem 1.2rem; border-bottom:1px solid rgba(201,168,76,0.12); text-align:center; }
+.pay-icon { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,#7a5010,#c9a84c); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:28px; box-shadow:0 0 24px rgba(201,168,76,0.4); }
+.pay-title { font-family:'Playfair Display',serif; font-size:22px; color:#c9a84c; margin-bottom:4px; }
+.pay-sub { font-size:12px; color:rgba(240,228,196,0.4); }
+.pay-body { padding:1.5rem 2rem; }
+.pay-amount-box { background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.25); padding:1.2rem; text-align:center; margin-bottom:1.5rem; }
+.pay-amount { font-family:'Playfair Display',serif; font-size:40px; color:#c9a84c; font-weight:700; line-height:1; }
+.pay-amount-label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(240,228,196,0.4); margin-top:4px; }
+.order-mini { margin-bottom:1.5rem; }
+.om-row { display:flex; justify-content:space-between; font-size:12px; padding:5px 0; border-bottom:1px solid rgba(201,168,76,0.06); }
+.om-name { color:rgba(240,228,196,0.6); }
+.om-price { color:#c9a84c; }
+.pay-methods { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:1.5rem; }
+.pm-badge { background:rgba(255,255,255,0.06); border:1px solid rgba(201,168,76,0.15); padding:8px 4px; text-align:center; font-size:9px; color:rgba(240,228,196,0.5); letter-spacing:.5px; }
+.pm-badge i { display:block; font-size:18px; color:#c9a84c; margin-bottom:3px; }
+.pay-btn {
+  width:100%; padding:16px; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:#050300; background:linear-gradient(135deg,#7a5010,#b08030 35%,#e0c050 55%,#b08030 75%,#7a5010);
+  border:none; cursor:pointer; box-shadow:0 4px 20px rgba(201,168,76,0.35); transition:all .3s; margin-bottom:10px;
+}
+.pay-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(201,168,76,0.5); }
+.cod-btn {
+  width:100%; padding:13px; font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase;
+  color:rgba(201,168,76,0.8); background:transparent; border:1px solid rgba(201,168,76,0.3); cursor:pointer; transition:all .3s;
+  text-decoration:none; display:block; text-align:center;
+}
+.cod-btn:hover { background:rgba(201,168,76,0.08); color:rgba(201,168,76,0.9); }
+.secure-note { text-align:center; margin-top:12px; font-size:10px; color:rgba(240,228,196,0.3); letter-spacing:.5px; }
+.secure-note i { color:#c9a84c; }
+.processing-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px; backdrop-filter:blur(4px); }
+.processing-overlay.active { display:flex; }
+.spinner { width:50px; height:50px; border:3px solid rgba(201,168,76,0.2); border-top-color:#c9a84c; border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pay-page">
+  <div class="pay-card">
+
+    <div class="pay-header">
+      <div class="pay-icon">💳</div>
+      <div class="pay-title">Complete Payment</div>
+      <div class="pay-sub">Order #{{ order.order_number }} · {{ order.name }}</div>
+    </div>
+
+    <div class="pay-body">
+
+      <!-- Amount -->
+      <div class="pay-amount-box">
+        <div class="pay-amount">₹{{ order.total }}</div>
+        <div class="pay-amount-label">Total Amount to Pay</div>
+      </div>
+
+      <!-- Order summary -->
+      <div class="order-mini">
+        {% for item in order.items.all %}
+        <div class="om-row">
+          <span class="om-name">{{ item.menu_item.name }} ×{{ item.quantity }}</span>
+          <span class="om-price">₹{{ item.line_total }}</span>
+        </div>
+        {% endfor %}
+        <div class="om-row" style="margin-top:4px;">
+          <span class="om-name" style="color:rgba(240,228,196,0.4);">Delivery</span>
+          <span class="om-price" style="color:rgba(240,228,196,0.4);">₹{{ order.delivery_charge }}</span>
+        </div>
+      </div>
+
+      <!-- Payment methods supported -->
+      <div class="pay-methods">
+        <div class="pm-badge"><i class="bi bi-phone"></i>GPay</div>
+        <div class="pm-badge"><i class="bi bi-phone-fill"></i>PhonePe</div>
+        <div class="pm-badge"><i class="bi bi-wallet2"></i>Paytm</div>
+        <div class="pm-badge"><i class="bi bi-credit-card"></i>Cards</div>
+      </div>
+
+      <!-- Pay Now Button -->
+      <button class="pay-btn" id="payNowBtn" onclick="startPayment()">
+        <i class="bi bi-lock-fill"></i> &nbsp; Pay ₹{{ order.total }} Securely
+      </button>
+
+      <!-- Fallback to COD -->
+      <a href="{% url 'order_confirmation' order.order_number %}" class="cod-btn" onclick="switchToCOD()">
+        <i class="bi bi-cash-coin"></i> &nbsp; Switch to Cash on Delivery Instead
+      </a>
+
+      <div class="secure-note">
+        <i class="bi bi-shield-lock-fill"></i>
+        100% Secure · Powered by Razorpay · SSL Encrypted
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Processing overlay -->
+<div class="processing-overlay" id="processingOverlay">
+  <div class="spinner"></div>
+  <div style="color:#c9a84c;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Processing Payment...</div>
+</div>
+
+<!-- Hidden form to submit payment result -->
+<form id="paymentForm" method="POST" action="{% url 'payment_verify' %}">
+  {% csrf_token %}
+  <input type="hidden" name="razorpay_order_id"   id="rzOrderId">
+  <input type="hidden" name="razorpay_payment_id"  id="rzPaymentId">
+  <input type="hidden" name="razorpay_signature"   id="rzSignature">
+</form>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function startPayment() {
+  document.getElementById('processingOverlay').classList.add('active');
+
+  var options = {
+    key:         '{{ rz_key_id }}',
+    amount:       {{ amount_paise }},
+    currency:    'INR',
+    name:        '{{ cafe_settings.cafe_name|default:"Star Queen Cafe" }}',
+    description: 'Order #{{ order.order_number }}',
+    order_id:    '{{ rz_order_id }}',
+
+    prefill: {
+      name:    '{{ order.name }}',
+      contact: '{{ order.phone }}',
+      email:   '{{ order.email|default:"" }}',
+    },
+
+    notes: {
+      order_number: '{{ order.order_number }}',
+      address:      '{{ order.address }}',
+    },
+
+    theme: {
+      color: '#c9a84c',
+    },
+
+    handler: function(response) {
+      // Payment successful — submit to verify
+      document.getElementById('rzOrderId').value   = response.razorpay_order_id;
+      document.getElementById('rzPaymentId').value = response.razorpay_payment_id;
+      document.getElementById('rzSignature').value = response.razorpay_signature;
+      document.getElementById('paymentForm').submit();
+    },
+
+    modal: {
+      ondismiss: function() {
+        // User closed payment modal
+        document.getElementById('processingOverlay').classList.remove('active');
+      }
+    }
+  };
+
+  var rzp = new Razorpay(options);
+
+  rzp.on('payment.failed', function(response) {
+    document.getElementById('processingOverlay').classList.remove('active');
+    alert('Payment failed: ' + response.error.description + '\nYou can try again or choose Cash on Delivery.');
+  });
+
+  document.getElementById('processingOverlay').classList.remove('active');
+  rzp.open();
+}
+
+// Switch to COD — update order payment method
+function switchToCOD() {
+  fetch('/order/place/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}'},
+    body: 'switch_cod=1&order_number={{ order.order_number }}'
+  });
+}
+</script>
+{% endblock %}

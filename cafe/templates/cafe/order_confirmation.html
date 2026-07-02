@@ -1,0 +1,288 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.order_number }} Confirmed — Star Queen Cafe{% endblock %}
+
+{% block extra_head %}
+<style>
+.confirm-page { background: #090702; min-height: 100vh; padding: 2rem 0; font-family: 'Montserrat', sans-serif; }
+
+.confirm-card {
+  background: #110e03;
+  border: 1px solid rgba(201,168,76,0.25);
+  max-width: 680px; margin: 0 auto;
+  position: relative; overflow: hidden;
+}
+.confirm-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #7a5010, #c9a84c, #e8d070, #c9a84c);
+}
+
+.confirm-header {
+  text-align: center; padding: 2.5rem 2rem 1.5rem;
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+}
+.success-icon {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, #7a5010, #c9a84c);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 32px;
+  box-shadow: 0 0 30px rgba(201,168,76,0.4);
+  animation: popIn .5s ease;
+}
+@keyframes popIn { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
+.confirm-title { font-family: 'Playfair Display', serif; font-size: 26px; color: #c9a84c; margin-bottom: 6px; }
+.order-num { font-size: 13px; color: rgba(240,228,196,0.5); letter-spacing: 2px; }
+.order-num strong { color: #f2ead8; font-size: 15px; }
+
+.confirm-body { padding: 1.5rem 2rem; }
+.section-lbl { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(201,168,76,0.5); margin-bottom: 12px; display: block; }
+
+/* Tracking progress bar */
+.track-steps {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  margin: 1rem 0 2rem;
+  position: relative;
+}
+.track-steps::before {
+  content: '';
+  position: absolute;
+  top: 20px; left: 10%; right: 10%; height: 2px;
+  background: rgba(201,168,76,0.15);
+  z-index: 0;
+}
+.track-progress {
+  position: absolute;
+  top: 20px; left: 10%; height: 2px;
+  background: linear-gradient(90deg, #c9a84c, #e8d070);
+  z-index: 1;
+  transition: width 1s ease;
+}
+
+.step {
+  display: flex; flex-direction: column; align-items: center;
+  flex: 1; position: relative; z-index: 2;
+}
+.step-icon {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; margin-bottom: 8px;
+  border: 2px solid rgba(201,168,76,0.2);
+  background: #110e03;
+  transition: all .5s;
+}
+.step.done .step-icon { background: linear-gradient(135deg, #7a5010, #c9a84c); border-color: #c9a84c; box-shadow: 0 0 16px rgba(201,168,76,0.4); }
+.step.active .step-icon { border-color: #c9a84c; box-shadow: 0 0 0 4px rgba(201,168,76,0.15); animation: stepPulse 2s infinite; }
+@keyframes stepPulse { 0%,100%{box-shadow:0 0 0 4px rgba(201,168,76,0.15);} 50%{box-shadow:0 0 0 8px rgba(201,168,76,0.08);} }
+.step-label { font-size: 9.5px; color: rgba(240,228,196,0.4); text-align: center; max-width: 70px; line-height: 1.4; letter-spacing: .5px; }
+.step.done .step-label, .step.active .step-label { color: #c9a84c; }
+
+/* Estimated time */
+.eta-box {
+  background: rgba(201,168,76,0.07);
+  border: 1px solid rgba(201,168,76,0.2);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 1.5rem;
+}
+.eta-time { font-family: 'Playfair Display', serif; font-size: 36px; color: #c9a84c; font-weight: 700; line-height: 1; }
+.eta-label { font-size: 11px; color: rgba(240,228,196,0.45); letter-spacing: 1px; }
+.eta-note { font-size: 10px; color: rgba(240,228,196,0.3); margin-top: 2px; }
+
+/* Order items */
+.order-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(201,168,76,0.06); font-size: 13px; }
+.oi-name { color: rgba(240,228,196,0.75); }
+.oi-qty { color: rgba(240,228,196,0.4); margin-left: 6px; }
+.oi-price { color: #c9a84c; font-weight: 600; }
+
+/* Summary rows */
+.sum-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; }
+.sum-label { color: rgba(240,228,196,0.45); }
+.sum-value { color: #f2ead8; }
+.sum-total { font-size: 16px; font-weight: 700; color: #c9a84c; border-top: 1px solid rgba(201,168,76,0.15); padding-top: 8px; margin-top: 4px; }
+
+/* Customer info */
+.cust-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ci-field label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(201,168,76,0.45); display: block; margin-bottom: 2px; }
+.ci-field span { font-size: 13px; color: rgba(240,228,196,0.7); }
+
+.confirm-actions { display: flex; gap: 12px; justify-content: center; padding: 1.5rem 2rem; border-top: 1px solid rgba(201,168,76,0.12); flex-wrap: wrap; }
+.btn-gold-sm { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #050300; font-weight: 700; padding: 12px 28px; background: linear-gradient(135deg,#7a5010,#b08030 35%,#e0c050 55%,#b08030 75%,#7a5010); border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: all .3s; }
+.btn-gold-sm:hover { transform: translateY(-2px); }
+.btn-outline-sm { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(201,168,76,0.85); font-weight: 400; padding: 11px 28px; background: transparent; border: 1px solid rgba(201,168,76,0.35); cursor: pointer; text-decoration: none; display: inline-block; transition: all .3s; }
+.btn-outline-sm:hover { background: rgba(201,168,76,0.08); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirm-page">
+  <div class="container">
+    <div class="confirm-card">
+
+      <!-- Header -->
+      <div class="confirm-header">
+        <div class="success-icon">🎉</div>
+        <div class="confirm-title">Order Confirmed!</div>
+        <div class="order-num">Order Number: <strong>#{{ order.order_number }}</strong></div>
+        <p style="font-size:12px;color:rgba(240,228,196,0.38);margin-top:6px;">
+          We've received your order and will start preparing it shortly.
+        </p>
+      </div>
+
+      <div class="confirm-body">
+
+        <!-- Estimated Time -->
+        <div class="eta-box">
+          <i class="bi bi-clock" style="font-size:28px;color:#c9a84c;flex-shrink:0;"></i>
+          <div>
+            <div class="eta-time">{{ order.estimated_time }} min</div>
+            <div class="eta-label">Estimated Delivery Time</div>
+            <div class="eta-note">Our delivery partner will contact you before arrival</div>
+          </div>
+        </div>
+
+        <!-- Live Tracking Steps -->
+        <span class="section-lbl">Live Order Tracking</span>
+        {% with status=order.status %}
+        <div class="track-steps" id="trackSteps">
+          <div class="track-progress" id="trackProgress"></div>
+
+          <div class="step {% if status in 'pending,confirmed,preparing,picked_up,on_the_way,delivered' %}done{% endif %}" data-step="0">
+            <div class="step-icon">📋</div>
+            <div class="step-label">Order Placed</div>
+          </div>
+          <div class="step {% if status in 'confirmed,preparing,picked_up,on_the_way,delivered' %}done{% elif status == 'pending' %}active{% endif %}" data-step="1">
+            <div class="step-icon">✅</div>
+            <div class="step-label">Confirmed</div>
+          </div>
+          <div class="step {% if status in 'preparing,picked_up,on_the_way,delivered' %}done{% elif status == 'confirmed' %}active{% endif %}" data-step="2">
+            <div class="step-icon">👨‍🍳</div>
+            <div class="step-label">Preparing</div>
+          </div>
+          <div class="step {% if status in 'on_the_way,delivered' %}done{% elif status == 'picked_up' %}active{% endif %}" data-step="3">
+            <div class="step-icon">🛵</div>
+            <div class="step-label">On the Way</div>
+          </div>
+          <div class="step {% if status == 'delivered' %}done{% elif status == 'on_the_way' %}active{% endif %}" data-step="4">
+            <div class="step-icon">🏠</div>
+            <div class="step-label">Delivered</div>
+          </div>
+        </div>
+
+        <!-- Current status badge -->
+        <div style="text-align:center;margin-bottom:1.5rem;">
+          <span style="background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);color:#c9a84c;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:6px 18px;">
+            {{ order.get_status_display }}
+          </span>
+        </div>
+        {% endwith %}
+
+        <!-- Order Items -->
+        <span class="section-lbl">Items Ordered</span>
+        {% for item in order_items %}
+        <div class="order-item-row">
+          <span><span class="oi-name">{{ item.menu_item.name }}</span><span class="oi-qty">×{{ item.quantity }}</span></span>
+          <span class="oi-price">₹{{ item.line_total }}</span>
+        </div>
+        {% endfor %}
+
+        <!-- Price breakdown -->
+        <div style="margin-top:12px;">
+          <div class="sum-row"><span class="sum-label">Subtotal</span><span class="sum-value">₹{{ order.subtotal }}</span></div>
+          <div class="sum-row"><span class="sum-label">Delivery Charge</span><span class="sum-value">₹{{ order.delivery_charge }}</span></div>
+          {% if order.discount > 0 %}
+          <div class="sum-row"><span class="sum-label">Discount</span><span style="color:#5cb85c;">-₹{{ order.discount }}</span></div>
+          {% endif %}
+          <div class="sum-row sum-total"><span class="sum-label">Total Paid</span><span class="sum-value">₹{{ order.total }}</span></div>
+        </div>
+
+        <!-- Customer Info -->
+        <span class="section-lbl" style="margin-top:1.5rem;">Delivery Details</span>
+        <div class="cust-info">
+          <div class="ci-field"><label>Name</label><span>{{ order.name }}</span></div>
+          <div class="ci-field"><label>Phone</label><span>{{ order.phone }}</span></div>
+          <div class="ci-field" style="grid-column:1/-1;"><label>Address</label><span>{{ order.address }}{% if order.landmark %}, {{ order.landmark }}{% endif %} — {{ order.pincode }}</span></div>
+          <div class="ci-field"><label>Payment</label><span>{{ order.get_payment_method_display }}</span></div>
+          <div class="ci-field"><label>Order Time</label><span>{{ order.created_at|date:"d M Y, h:i A" }}</span></div>
+        </div>
+
+      </div>
+
+      <!-- QR Payment Section — show if payment is UPI -->
+      {% if order.payment_method == 'upi' %}
+      <div style="padding:1.5rem 2rem;border-top:1px solid rgba(201,168,76,0.12);text-align:center;">
+        <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,0.5);margin-bottom:16px;">Complete Your Payment</div>
+
+        {% if cafe_settings.qr_code %}
+        <img src="{{ cafe_settings.qr_code.url }}"
+             alt="UPI QR Code"
+             style="width:220px;height:220px;object-fit:contain;border:2px solid rgba(201,168,76,0.5);padding:10px;background:#fff;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;" />
+        {% else %}
+        <div style="width:220px;height:220px;border:2px dashed rgba(201,168,76,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 14px;background:rgba(201,168,76,0.03);">
+          <i class="bi bi-qr-code" style="font-size:56px;color:rgba(201,168,76,0.4);"></i>
+          <span style="font-size:10px;color:rgba(201,168,76,0.4);margin-top:8px;">QR Code Coming Soon</span>
+        </div>
+        {% endif %}
+
+        {% if cafe_settings.upi_id %}
+        <div style="font-size:14px;color:#f2ead8;margin-bottom:4px;">
+          UPI ID: <strong style="color:#c9a84c;">{{ cafe_settings.upi_id }}</strong>
+        </div>
+        {% endif %}
+
+        {% if cafe_settings.upi_name %}
+        <div style="font-size:12px;color:rgba(240,228,196,0.45);margin-bottom:10px;">
+          Pay to: {{ cafe_settings.upi_name }}
+        </div>
+        {% endif %}
+
+        <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);padding:12px 16px;font-size:13px;color:#c9a84c;font-weight:600;">
+          Total Amount: ₹{{ order.total }}
+        </div>
+
+        <div style="font-size:11px;color:rgba(240,228,196,0.35);margin-top:10px;line-height:1.7;">
+          {{ cafe_settings.payment_note }}<br>
+          <span style="color:rgba(240,168,76,0.6);">⚠️ Payment screenshot save karein — delivery ke time kaam aayega</span>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Payment Info Badge -->
+      {% if payment_info and payment_info.status == 'success' %}
+      <div style="padding:1rem 2rem;background:rgba(46,125,50,0.1);border-top:1px solid rgba(46,125,50,0.3);text-align:center;">
+        <span style="background:#2e7d32;color:#fff;font-size:11px;font-weight:700;padding:5px 18px;letter-spacing:1.5px;text-transform:uppercase;">
+          ✓ Payment Successful — ₹{{ order.total }} Paid
+        </span>
+        {% if payment_info.razorpay_payment_id %}
+        <div style="font-size:10px;color:rgba(240,228,196,0.4);margin-top:6px;">
+          Payment ID: {{ payment_info.razorpay_payment_id }}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Actions -->
+      <div class="confirm-actions">
+        <a href="{% url 'receipt_download' order.order_number %}" class="btn-gold-sm"><i class="bi bi-receipt"></i> Download Receipt</a>
+        <a href="{% url 'track_order' %}?order_number={{ order.order_number }}" class="btn-outline-sm"><i class="bi bi-geo-alt-fill"></i> Track Order</a>
+        <a href="{% url 'delivery_home' %}" class="btn-outline-sm"><i class="bi bi-bag-plus"></i> Order Again</a>
+        <a href="{% url 'home' %}" class="btn-outline-sm"><i class="bi bi-house"></i> Home</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Set progress bar width based on status
+const statusProgress = {
+  'pending': '5%', 'confirmed': '25%', 'preparing': '50%',
+  'picked_up': '62%', 'on_the_way': '75%', 'delivered': '100%', 'cancelled': '0%'
+};
+const prog = document.getElementById('trackProgress');
+if (prog) prog.style.width = statusProgress['{{ order.status }}'] || '5%';
+</script>
+{% endblock %}

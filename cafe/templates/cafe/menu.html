@@ -1,0 +1,94 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Menu — Star Queen Cafe, Beed{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container position-relative">
+    <div class="section-subtitle">Crafted with Love</div>
+    <h1 class="page-hero-title section-title">Our Menu</h1>
+    <div class="gold-divider"></div>
+    <p style="color:var(--text-muted);font-size:0.9rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;letter-spacing:1px;">
+      From refreshing sips to hearty bites — something for everyone
+    </p>
+  </div>
+</div>
+
+<!-- CATEGORY FILTER TABS -->
+<div style="background:var(--dark2);border-bottom:1px solid var(--border);padding:1.5rem 0;position:sticky;top:72px;z-index:100;">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-center gap-1">
+      <a href="{% url 'menu' %}" class="category-tab {% if not selected_category %}active{% endif %}">All</a>
+      {% for cat_key, cat_name in categories %}
+      <a href="{% url 'menu' %}?category={{ cat_key }}" class="category-tab {% if selected_category == cat_key %}active{% endif %}">{{ cat_name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- MENU ITEMS -->
+<section style="background:var(--black);">
+  <div class="container">
+    {% if category_data %}
+      {% for cat_name, data in category_data.items %}
+      <div class="mb-5 fade-in-scroll" id="cat-{{ data.key }}">
+        <div class="cat-header">
+          <h3 class="gold-text">{{ cat_name }}</h3>
+          <div class="cat-line"></div>
+          <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;">{{ data.items|length }} item{{ data.items|length|pluralize }}</span>
+        </div>
+        <div class="row g-3">
+          {% for item in data.items %}
+          <div class="col-md-6 col-lg-4">
+            <div class="menu-card h-100">
+              {% if item.is_bestseller %}
+              <div class="bestseller-badge">✦ Bestseller</div>
+              {% endif %}
+              <div class="menu-card-body">
+                <div class="menu-card-title">{{ item.name }}</div>
+                {% if item.description %}
+                <div class="menu-card-desc">{{ item.description }}</div>
+                {% endif %}
+                <div class="d-flex align-items-center justify-content-between mt-auto pt-2" style="border-top:1px solid rgba(201,168,76,0.15);">
+                  <span class="menu-card-price">₹{{ item.price }}</span>
+                  <span style="background:rgba(201,168,76,0.1);color:var(--gold);font-size:0.65rem;padding:0.2rem 0.6rem;letter-spacing:1px;text-transform:uppercase;">Available</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center py-5">
+        <div style="font-size:3rem;margin-bottom:1rem;">🍽️</div>
+        <p style="color:var(--text-muted);">No items found in this category yet.</p>
+        <a href="{% url 'menu' %}" class="btn-outline-gold mt-3">View All Items</a>
+      </div>
+    {% endif %}
+
+    <!-- If no DB items, show placeholder menu -->
+    {% if not category_data %}
+    <div class="text-center py-4 fade-in-scroll">
+      <p style="color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;">
+        ✦ Add menu items via the <a href="/admin/" style="color:var(--gold);">Django Admin Panel</a> ✦
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- RESERVATION CTA -->
+<div style="background:var(--dark2);border-top:1px solid var(--border);padding:4rem 0;text-align:center;">
+  <div class="container fade-in-scroll">
+    <p style="color:var(--text-muted);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem;">Ready to dine?</p>
+    <h3 style="color:var(--gold);font-family:'Playfair Display',serif;margin-bottom:1.5rem;">Book Your Table at Star Queen Cafe</h3>
+    <a href="{% url 'reservation' %}" class="btn-gold"><span>Reserve Now</span></a>
+  </div>
+</div>
+
+{% endblock %}

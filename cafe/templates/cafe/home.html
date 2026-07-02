@@ -1,0 +1,238 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Star Queen Cafe — The Family Cafe & Bistro, Beed, Maharashtra{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+  <div class="hero-particles"></div>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="hero-content">
+          <div class="hero-tagline">✦ Welcome to ✦</div>
+          <h1 class="hero-title">
+            Star <span class="queen">Queen</span><br>Cafe
+          </h1>
+          <p class="hero-subtitle">The Family Cafe & Bistro</p>
+          <div class="hero-location">
+            <i class="bi bi-geo-alt-fill"></i>
+            Beed, Maharashtra, India
+          </div>
+          <div class="hero-buttons d-flex flex-wrap gap-3">
+            <a href="{% url 'menu' %}" class="btn-gold"><span>Explore Menu</span></a>
+            <a href="{% url 'reservation' %}" class="btn-outline-gold">Reserve a Table</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-flex justify-content-end">
+        <div class="hero-ornament">
+          <div class="hero-ornament-sweep"></div>
+          <div class="hero-ornament-sweep2"></div>
+          <div class="hero-ornament-glow"></div>
+          <div class="hero-ornament-inner">
+            <img src="{% static 'cafe/img/logo.png' %}" alt="Star Queen Cafe">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-item fade-in-scroll">
+          <div class="stat-number" data-count="50" data-suffix="+">0+</div>
+          <div class="stat-label">Menu Items</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item fade-in-scroll">
+          <div class="stat-number" data-count="1000" data-suffix="+">0+</div>
+          <div class="stat-label">Happy Guests</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item fade-in-scroll">
+          <div class="stat-number" data-count="12" data-suffix="">0</div>
+          <div class="stat-label">Categories</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-item fade-in-scroll">
+          <div class="stat-number" data-count="5" data-suffix="★">0</div>
+          <div class="stat-label">Rating</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT SECTION -->
+<section class="section-dark">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5 fade-in-scroll">
+        <div style="border:1px solid var(--border);padding:2.5rem;position:relative;">
+          <div style="position:absolute;top:-1px;left:2rem;right:2rem;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+          <div class="section-subtitle">About Us</div>
+          <h2 class="section-title">A Taste of <em>Home</em></h2>
+          <div class="gold-divider" style="margin:1.5rem 0;"></div>
+          <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.9;margin-bottom:1.2rem;">
+            Nestled in the heart of Beed, Maharashtra, Star Queen Cafe is more than just a dining destination — it's a warm family experience crafted with love.
+          </p>
+          <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.9;margin-bottom:2rem;">
+            From creamy ice cream sundaes to sizzling pizzas, refreshing cold coffees to fluffy momos — every item on our menu is prepared fresh to bring smiles to every face.
+          </p>
+          <a href="{% url 'visit' %}" class="btn-outline-gold">Our Story &amp; Location</a>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="row g-3">
+          {% for icon, label, desc in highlights %}
+          <div class="col-6 fade-in-scroll">
+            <div class="info-card">
+              <div class="info-icon"><i class="{{ icon }}"></i></div>
+              <h5 style="font-size:0.95rem;color:var(--white);margin-bottom:0.5rem;">{{ label }}</h5>
+              <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">{{ desc }}</p>
+            </div>
+          </div>
+          {% empty %}
+          <div class="col-6 fade-in-scroll">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-heart-fill"></i></div>
+              <h5 style="font-size:0.95rem;color:var(--white);margin-bottom:0.5rem;">Family Friendly</h5>
+              <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">A warm, welcoming space for all ages.</p>
+            </div>
+          </div>
+          <div class="col-6 fade-in-scroll">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-star-fill"></i></div>
+              <h5 style="font-size:0.95rem;color:var(--white);margin-bottom:0.5rem;">Quality First</h5>
+              <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">Freshly made, highest quality ingredients.</p>
+            </div>
+          </div>
+          <div class="col-6 fade-in-scroll">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-cup-hot-fill"></i></div>
+              <h5 style="font-size:0.95rem;color:var(--white);margin-bottom:0.5rem;">Wide Variety</h5>
+              <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">12+ categories from snacks to desserts.</p>
+            </div>
+          </div>
+          <div class="col-6 fade-in-scroll">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-calendar-check-fill"></i></div>
+              <h5 style="font-size:0.95rem;color:var(--white);margin-bottom:0.5rem;">Easy Bookings</h5>
+              <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">Reserve your table in minutes.</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BESTSELLERS SECTION -->
+{% if bestsellers %}
+<section style="background:var(--black);">
+  <div class="container">
+    <div class="text-center mb-5 fade-in-scroll">
+      <div class="section-subtitle">Our Specialties</div>
+      <h2 class="section-title">Bestsellers</h2>
+      <div class="gold-divider"></div>
+    </div>
+    <div class="row g-4">
+      {% for item in bestsellers %}
+      <div class="col-md-6 col-lg-4 fade-in-scroll">
+        <div class="menu-card">
+          <div class="bestseller-badge">✦ Bestseller</div>
+          <div class="menu-card-body">
+            <div class="menu-card-title">{{ item.name }}</div>
+            <div class="menu-card-desc">{{ item.description|default:"A star favourite at Star Queen Cafe." }}</div>
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="menu-card-price">₹{{ item.price }}</span>
+              <span style="font-size:0.7rem;color:var(--gold);letter-spacing:1px;text-transform:uppercase;">{{ item.get_category_display }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5 fade-in-scroll">
+      <a href="{% url 'menu' %}" class="btn-gold"><span>View Full Menu</span></a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- MENU CATEGORIES PREVIEW -->
+<section class="section-dark">
+  <div class="container">
+    <div class="text-center mb-5 fade-in-scroll">
+      <div class="section-subtitle">What We Offer</div>
+      <h2 class="section-title">Our Menu Categories</h2>
+      <div class="gold-divider"></div>
+    </div>
+    <div class="row g-3 text-center">
+      {% for emoji, label, cat_key in categories_preview %}
+      <div class="col-6 col-md-4 col-lg-2 fade-in-scroll">
+        <a href="{% url 'menu' %}?category={{ cat_key }}" style="text-decoration:none;">
+          <div style="background:var(--dark3);border:1px solid var(--border);padding:1.5rem 1rem;transition:all 0.3s ease;" class="category-preview-card">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">{{ emoji }}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">{{ label }}</div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      {% for cat_key, cat_name in menu_categories %}
+      <div class="col-6 col-md-4 col-lg-2 fade-in-scroll">
+        <a href="{% url 'menu' %}?category={{ cat_key }}" style="text-decoration:none;">
+          <div style="background:var(--dark3);border:1px solid var(--border);padding:1.5rem 1rem;transition:all 0.3s ease;">
+            <div style="font-size:0.72rem;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;">{{ cat_name }}</div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA SECTION -->
+<section style="background:linear-gradient(135deg,var(--dark2),var(--dark));border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container text-center fade-in-scroll">
+    <div class="section-subtitle">Make a Memory</div>
+    <h2 class="section-title" style="font-size:2.5rem;">Reserve Your Table Today</h2>
+    <div class="gold-divider"></div>
+    <p style="color:var(--text-muted);font-size:0.9rem;max-width:500px;margin:0 auto 2.5rem;line-height:1.8;">
+      Whether it's a family dinner, a date night, or a celebration — we have the perfect table waiting for you.
+    </p>
+    <a href="{% url 'reservation' %}" class="btn-gold"><span>Book Now — It's Free</span></a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add hover effect to category cards
+document.querySelectorAll('.category-preview-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    card.style.borderColor = 'var(--gold)';
+    card.style.transform = 'translateY(-5px)';
+    card.style.boxShadow = '0 10px 30px rgba(201,168,76,0.15)';
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.borderColor = 'rgba(201, 168, 76, 0.3)';
+    card.style.transform = 'translateY(0)';
+    card.style.boxShadow = 'none';
+  });
+});
+</script>
+{% endblock %}

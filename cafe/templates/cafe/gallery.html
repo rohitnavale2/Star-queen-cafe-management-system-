@@ -1,0 +1,147 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Gallery — Star Queen Cafe, Beed{% endblock %}
+
+{% block extra_head %}
+<style>
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 767px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .gallery-grid { grid-template-columns: 1fr; }
+}
+.g-large { grid-column: span 2; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="container position-relative">
+    <div class="section-subtitle">Through the Lens</div>
+    <h1 class="page-hero-title section-title">Our Gallery</h1>
+    <div class="gold-divider"></div>
+    <p style="color:var(--text-muted);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;">
+      A glimpse into the Star Queen experience
+    </p>
+  </div>
+</div>
+
+<section style="background:var(--black);">
+  <div class="container">
+
+    <!-- INTERIOR -->
+    <div class="mb-5 fade-in-scroll">
+      <div class="cat-header mb-4">
+        <h3 class="gold-text"><i class="bi bi-building me-2"></i>Cafe Interior</h3>
+        <div class="cat-line"></div>
+      </div>
+
+      {% if interior_images %}
+      <div class="gallery-grid">
+        {% for img in interior_images %}
+        <div class="gallery-item {% if forloop.first %}g-large{% endif %}">
+          <img src="{{ img.get_image }}" alt="{{ img.title }}" loading="lazy">
+          <div class="gallery-item-overlay">
+            <span style="color:var(--gold);font-size:0.8rem;letter-spacing:1px;">{{ img.title }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <!-- Placeholder grid when no DB images -->
+      <div class="gallery-grid">
+        {% for i in "123456" %}
+        <div class="gallery-placeholder {% if forloop.first %}g-large{% endif %}" style="height:{% if forloop.first %}320px{% else %}240px{% endif %};">
+          <i class="bi bi-columns-gap"></i>
+          <span>Interior {{ forloop.counter }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- FOOD -->
+    <div class="mb-5 fade-in-scroll">
+      <div class="cat-header mb-4">
+        <h3 class="gold-text"><i class="bi bi-egg-fried me-2"></i>Food Images</h3>
+        <div class="cat-line"></div>
+      </div>
+
+      {% if food_images %}
+      <div class="gallery-grid">
+        {% for img in food_images %}
+        <div class="gallery-item {% if forloop.counter == 3 %}g-large{% endif %}">
+          <img src="{{ img.get_image }}" alt="{{ img.title }}" loading="lazy">
+          <div class="gallery-item-overlay">
+            <span style="color:var(--gold);font-size:0.8rem;letter-spacing:1px;">{{ img.title }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="gallery-grid">
+        {% for label in food_placeholders %}
+        <div class="gallery-placeholder {% if forloop.counter == 3 %}g-large{% endif %}" style="height:{% if forloop.counter == 3 %}300px{% else %}240px{% endif %};">
+          <i class="bi bi-cup-straw"></i>
+          <span>{{ label }}</span>
+        </div>
+        {% empty %}
+        {% for i in "123456" %}
+        <div class="gallery-placeholder {% if forloop.counter == 3 %}g-large{% endif %}" style="height:{% if forloop.counter == 3 %}300px{% else %}240px{% endif %};">
+          <i class="bi bi-cup-straw"></i>
+          <span>Food {{ forloop.counter }}</span>
+        </div>
+        {% endfor %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="mb-3 fade-in-scroll">
+      <div class="cat-header mb-4">
+        <h3 class="gold-text"><i class="bi bi-people-fill me-2"></i>Customer Photos</h3>
+        <div class="cat-line"></div>
+      </div>
+
+      {% if customer_images %}
+      <div class="gallery-grid">
+        {% for img in customer_images %}
+        <div class="gallery-item">
+          <img src="{{ img.get_image }}" alt="{{ img.title }}" loading="lazy">
+          <div class="gallery-item-overlay">
+            <span style="color:var(--gold);font-size:0.8rem;letter-spacing:1px;">{{ img.title }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="gallery-grid">
+        {% for i in "123456" %}
+        <div class="gallery-placeholder" style="height:240px;">
+          <i class="bi bi-person-heart"></i>
+          <span>Happy Guest {{ forloop.counter }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="text-center py-4 fade-in-scroll">
+      <p style="color:var(--text-muted);font-size:0.8rem;letter-spacing:1px;">
+        <i class="bi bi-instagram" style="color:var(--gold);"></i>
+        &nbsp;Tag us @StarQueenCafe and share your moments with us!
+      </p>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

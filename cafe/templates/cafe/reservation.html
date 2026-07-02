@@ -1,0 +1,509 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Reserve a Table — Star Queen Cafe, Beed{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ---- RECEIPT MODAL ---- */
+.receipt-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+.receipt-modal-overlay.show { display: flex; }
+
+/* The printable receipt card */
+#receiptCard {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.receipt-header {
+  background: linear-gradient(135deg, #0d0d2b 0%, #1a1205 100%);
+  padding: 2rem 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+}
+.receipt-header::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -12px;
+  left: 0; right: 0;
+  height: 24px;
+  background: #fff;
+  clip-path: polygon(0 100%, 2% 0%, 4% 100%, 6% 0%, 8% 100%, 10% 0%, 12% 100%, 14% 0%, 16% 100%, 18% 0%, 20% 100%, 22% 0%, 24% 100%, 26% 0%, 28% 100%, 30% 0%, 32% 100%, 34% 0%, 36% 100%, 38% 0%, 40% 100%, 42% 0%, 44% 100%, 46% 0%, 48% 100%, 50% 0%, 52% 100%, 54% 0%, 56% 100%, 58% 0%, 60% 100%, 62% 0%, 64% 100%, 66% 0%, 68% 100%, 70% 0%, 72% 100%, 74% 0%, 76% 100%, 78% 0%, 80% 100%, 82% 0%, 84% 100%, 86% 0%, 88% 100%, 90% 0%, 92% 100%, 94% 0%, 96% 100%, 98% 0%, 100% 100%);
+}
+
+.receipt-logo-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: contain;
+  border: 2px solid #c9a84c;
+  background: rgba(255,255,255,0.05);
+  margin-bottom: 0.8rem;
+}
+.receipt-cafe-name {
+  font-family: 'Playfair Display', serif;
+  color: #c9a84c;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.receipt-cafe-sub {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+.receipt-body {
+  padding: 2rem 2rem 1.5rem;
+  background: #fff;
+}
+
+.receipt-confirmed-badge {
+  background: linear-gradient(135deg, #c9a84c, #e8c97a);
+  color: #0a0a0a;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 0.35rem 1rem;
+  display: inline-block;
+  margin-bottom: 1.2rem;
+}
+
+.receipt-booking-id {
+  font-size: 0.7rem;
+  color: #888;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+.receipt-booking-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: #0a0a0a;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.receipt-divider {
+  border: none;
+  border-top: 1px dashed #ddd;
+  margin: 1rem 0;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+}
+.receipt-label {
+  color: #888;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  flex: 0 0 40%;
+}
+.receipt-value {
+  color: #111;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+}
+
+.receipt-highlight-box {
+  background: linear-gradient(135deg, #0d0d2b, #1a1a1a);
+  padding: 1rem 1.5rem;
+  margin: 1.2rem 0;
+  border-left: 3px solid #c9a84c;
+}
+.receipt-highlight-box .receipt-label { color: rgba(255,255,255,0.5); }
+.receipt-highlight-box .receipt-value { color: #c9a84c; font-size: 1rem; }
+
+.receipt-note {
+  background: #fffbf0;
+  border: 1px solid #e8c97a;
+  padding: 0.8rem 1rem;
+  font-size: 0.78rem;
+  color: #7a5c00;
+  margin-top: 0.5rem;
+  line-height: 1.6;
+}
+
+.receipt-footer-strip {
+  background: #0d0d2b;
+  padding: 1rem 2rem;
+  text-align: center;
+}
+.receipt-footer-strip p {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  margin: 0;
+  line-height: 1.7;
+}
+.receipt-footer-strip .gold { color: #c9a84c; }
+
+/* Action buttons above/below receipt */
+.receipt-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  padding: 1.2rem 2rem;
+  background: #f5f5f5;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap;
+}
+.btn-download {
+  background: linear-gradient(135deg, #a07830, #c9a84c, #e8c97a);
+  color: #0a0a0a;
+  border: none;
+  padding: 0.7rem 1.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-download:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-close-receipt {
+  background: transparent;
+  color: #666;
+  border: 1px solid #ccc;
+  padding: 0.7rem 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-close-receipt:hover { background: #f0f0f0; }
+
+/* Print styles */
+@media print {
+  body * { visibility: hidden !important; }
+  #receiptCard, #receiptCard * { visibility: visible !important; }
+  #receiptCard { position: fixed !important; inset: 0 !important; max-height: none !important; box-shadow: none !important; }
+  .receipt-actions { display: none !important; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="container position-relative">
+    <div class="section-subtitle">Your Table Awaits</div>
+    <h1 class="page-hero-title section-title">Reserve a Table</h1>
+    <div class="gold-divider"></div>
+    <p style="color:var(--text-muted);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;">
+      Book your dining experience at Star Queen Cafe, Beed
+    </p>
+  </div>
+</div>
+
+<section class="reservation-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- Error Messages -->
+        {% if messages %}
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <div class="alert alert-danger-dark mb-4 fade-in-scroll" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ message }}
+          </div>
+          {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        <!-- BOOKING FORM -->
+        <div class="form-wrapper fade-in-scroll">
+          <div class="text-center mb-4">
+            <img src="{% static 'cafe/img/logo.png' %}" alt="Star Queen Cafe" style="width:72px;height:72px;border-radius:50%;object-fit:contain;border:2px solid var(--gold);background:rgba(201,168,76,0.05);margin-bottom:0.8rem;">
+            <h3 style="font-family:'Playfair Display',serif;color:var(--gold);">Make Your Reservation</h3>
+            <p style="color:var(--text-muted);font-size:0.85rem;">Fill in the details below — you'll receive a downloadable receipt instantly.</p>
+          </div>
+
+          <form method="post" novalidate id="reservationForm">
+            {% csrf_token %}
+            <div class="row g-3">
+
+              <div class="col-md-6">
+                <label class="form-label">Full Name *</label>
+                {{ form.name }}
+                {% if form.name.errors %}<div style="color:#f88;font-size:0.78rem;margin-top:0.3rem;">{{ form.name.errors.0 }}</div>{% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Phone Number *</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}<div style="color:#f88;font-size:0.78rem;margin-top:0.3rem;">{{ form.phone.errors.0 }}</div>{% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Date *</label>
+                {{ form.date }}
+                {% if form.date.errors %}<div style="color:#f88;font-size:0.78rem;margin-top:0.3rem;">{{ form.date.errors.0 }}</div>{% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Time *</label>
+                {{ form.time }}
+                {% if form.time.errors %}<div style="color:#f88;font-size:0.78rem;margin-top:0.3rem;">{{ form.time.errors.0 }}</div>{% endif %}
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">No. of Guests *</label>
+                {{ form.guests }}
+                {% if form.guests.errors %}<div style="color:#f88;font-size:0.78rem;margin-top:0.3rem;">{{ form.guests.errors.0 }}</div>{% endif %}
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Special Requests <span style="color:var(--text-muted);font-weight:300;">(optional)</span></label>
+                {{ form.special_request }}
+              </div>
+
+              <div class="col-12 text-center pt-2">
+                <button type="submit" class="btn-gold px-5">
+                  <span><i class="bi bi-calendar-check me-2"></i>Confirm &amp; Get Receipt</span>
+                </button>
+                <p style="color:var(--text-muted);font-size:0.75rem;margin-top:1rem;">
+                  <i class="bi bi-file-earmark-arrow-down" style="color:var(--gold);"></i>
+                  A downloadable PDF receipt is generated after booking.
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Info boxes -->
+        <div class="row g-3 mt-2">
+          <div class="col-md-4 fade-in-scroll">
+            <div style="background:var(--dark2);border:1px solid var(--border);padding:1.5rem;text-align:center;">
+              <i class="bi bi-clock" style="font-size:1.5rem;color:var(--gold);display:block;margin-bottom:0.5rem;"></i>
+              <div style="font-size:0.7rem;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;">Hours</div>
+              <div style="font-size:0.85rem;color:var(--white);margin-top:0.3rem;">10 AM – 11 PM</div>
+            </div>
+          </div>
+          <div class="col-md-4 fade-in-scroll">
+            <div style="background:var(--dark2);border:1px solid var(--border);padding:1.5rem;text-align:center;">
+              <i class="bi bi-people" style="font-size:1.5rem;color:var(--gold);display:block;margin-bottom:0.5rem;"></i>
+              <div style="font-size:0.7rem;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;">Capacity</div>
+              <div style="font-size:0.85rem;color:var(--white);margin-top:0.3rem;">Up to 20 Guests</div>
+            </div>
+          </div>
+          <div class="col-md-4 fade-in-scroll">
+            <div style="background:var(--dark2);border:1px solid var(--border);padding:1.5rem;text-align:center;">
+              <i class="bi bi-telephone" style="font-size:1.5rem;color:var(--gold);display:block;margin-bottom:0.5rem;"></i>
+              <div style="font-size:0.7rem;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;">Call Us</div>
+              <div style="font-size:0.85rem;color:var(--white);margin-top:0.3rem;">+91 8805803111</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== RECEIPT MODAL ===== -->
+{% if booking %}
+<div class="receipt-modal-overlay show" id="receiptOverlay">
+  <div id="receiptCard">
+
+    <!-- Header with logo -->
+    <div class="receipt-header">
+      <img src="{% static 'cafe/img/logo.png' %}" alt="Star Queen Cafe" class="receipt-logo-img">
+      <div class="receipt-cafe-name">Star Queen Cafe</div>
+      <div class="receipt-cafe-sub">The Family Cafe &amp; Bistro · Beed, Maharashtra</div>
+    </div>
+
+    <!-- Body -->
+    <div class="receipt-body">
+      <div class="text-center">
+        <div class="receipt-confirmed-badge">✦ Booking Confirmed ✦</div>
+      </div>
+
+      <div class="text-center">
+        <div class="receipt-booking-id">Reservation ID</div>
+        <div class="receipt-booking-num">{{ booking.id }}</div>
+      </div>
+
+      <hr class="receipt-divider">
+
+      <div class="receipt-row">
+        <span class="receipt-label">Guest Name</span>
+        <span class="receipt-value">{{ booking.name }}</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-label">Phone</span>
+        <span class="receipt-value">{{ booking.phone }}</span>
+      </div>
+
+      <div class="receipt-highlight-box">
+        <div class="receipt-row" style="padding:0.3rem 0;">
+          <span class="receipt-label">📅 Date</span>
+          <span class="receipt-value">{{ booking.date }}</span>
+        </div>
+        <div class="receipt-row" style="padding:0.3rem 0;">
+          <span class="receipt-label">⏰ Time</span>
+          <span class="receipt-value">{{ booking.time }}</span>
+        </div>
+        <div class="receipt-row" style="padding:0.3rem 0;">
+          <span class="receipt-label">👥 Guests</span>
+          <span class="receipt-value">{{ booking.guests }} Person{{ booking.guests|pluralize }}</span>
+        </div>
+      </div>
+
+      {% if booking.special_request %}
+      <div class="receipt-row">
+        <span class="receipt-label">Special Request</span>
+        <span class="receipt-value" style="font-style:italic;color:#555;">{{ booking.special_request }}</span>
+      </div>
+      <hr class="receipt-divider">
+      {% endif %}
+
+      <div class="receipt-row" style="font-size:0.75rem;">
+        <span class="receipt-label">Booked On</span>
+        <span class="receipt-value" style="color:#888;font-weight:400;">{{ booking.created_at }}</span>
+      </div>
+
+      <div class="receipt-row" style="font-size:0.75rem;">
+        <span class="receipt-label">Status</span>
+        <span class="receipt-value" style="color:#2e7d32;font-weight:700;">⬤ Pending Confirmation</span>
+      </div>
+
+      <div class="receipt-note">
+        <i class="bi bi-info-circle"></i>&nbsp;
+        Please show this receipt on arrival. We will call you within 2 hours to confirm your reservation.
+        Walk-in welcome — subject to availability.
+      </div>
+    </div>
+
+    <!-- Footer strip -->
+    <div class="receipt-footer-strip">
+      <p>
+        <span class="gold">⭐ Star Queen Cafe</span><br>
+        Sarada Capital, Near Kajal Sweets, DP Road, Beed – 431122<br>
+        <span class="gold">+91 XXXXX XXXXX</span> · hello@starqueencafe.com
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="receipt-actions">
+      <button class="btn-download" onclick="downloadReceipt()">
+        <i class="bi bi-download me-1"></i> Download Receipt
+      </button>
+      <button class="btn-download" onclick="printReceipt()" style="background:linear-gradient(135deg,#333,#555);color:#fff;">
+        <i class="bi bi-printer me-1"></i> Print
+      </button>
+      <button class="btn-close-receipt" onclick="closeReceipt()">
+        <i class="bi bi-x me-1"></i> Close
+      </button>
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- html2canvas + jsPDF for PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+function closeReceipt() {
+  document.getElementById('receiptOverlay').classList.remove('show');
+}
+
+function printReceipt() {
+  window.print();
+}
+
+async function downloadReceipt() {
+  const btn = document.querySelector('.btn-download');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Generating...';
+  btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const receiptCard = document.getElementById('receiptCard');
+
+    // Temporarily hide action buttons for clean capture
+    const actions = receiptCard.querySelector('.receipt-actions');
+    actions.style.display = 'none';
+
+    const canvas = await html2canvas(receiptCard, {
+      scale: 2.5,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+    });
+
+    actions.style.display = 'flex';
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a5',
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+    // Get booking ID from the page
+    const bookingIdEl = document.querySelector('.receipt-booking-num');
+    const bookingId = bookingIdEl ? bookingIdEl.textContent.trim() : 'booking';
+    pdf.save('StarQueenCafe_Receipt_' + bookingId + '.pdf');
+
+  } catch (err) {
+    console.error('PDF error:', err);
+    alert('Could not generate PDF. Please use the Print option instead.');
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
+// Auto-show receipt if booking exists
+window.addEventListener('DOMContentLoaded', function() {
+  const overlay = document.getElementById('receiptOverlay');
+  if (overlay) {
+    overlay.classList.add('show');
+    // Scroll to top so user sees the modal
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,696 @@
+{% extends 'cafe/base.html' %}
+{% load static %}
+
+{% block title %}Order Online — Star Queen Cafe, Beed{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ══ DELIVERY PAGE STYLES ══ */
+.delivery-page { background: #09070200; background: #090702; min-height: 100vh; color: #f0e6cc; font-family: 'Montserrat', sans-serif; }
+
+/* Top delivery banner */
+.delivery-banner {
+  background: linear-gradient(135deg, #1a1000, #2a1800);
+  border-bottom: 2px solid rgba(201,168,76,0.3);
+  padding: 14px 0;
+}
+.delivery-banner .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.db-info { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.db-badge {
+  background: rgba(201,168,76,0.15);
+  border: 1px solid rgba(201,168,76,0.35);
+  color: #c9a84c;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 5px 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+.db-badge i { color: #c9a84c; }
+.db-text { font-size: 12px; color: rgba(240,228,196,0.55); }
+.db-text strong { color: #c9a84c; }
+
+/* Layout */
+.delivery-layout { display: grid; grid-template-columns: 1fr 380px; gap: 0; min-height: calc(100vh - 140px); }
+.menu-panel { border-right: 1px solid rgba(201,168,76,0.12); padding: 24px; overflow-y: auto; }
+.cart-panel { background: #0d0b04; padding: 20px; position: sticky; top: 80px; height: calc(100vh - 80px); overflow-y: auto; display: flex; flex-direction: column; }
+
+/* Category nav pills */
+.cat-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(201,168,76,0.1); }
+.cat-pill {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: rgba(240,228,196,0.55);
+  padding: 6px 14px;
+  border: 1px solid rgba(201,168,76,0.2);
+  background: transparent;
+  cursor: pointer;
+  transition: all .25s;
+  text-decoration: none;
+  display: flex; align-items: center; gap: 5px;
+}
+.cat-pill:hover, .cat-pill.active {
+  background: rgba(201,168,76,0.12);
+  border-color: rgba(201,168,76,0.6);
+  color: #c9a84c;
+}
+
+/* Category section */
+.cat-section { margin-bottom: 32px; }
+.cat-section-header {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; color: #c9a84c;
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.cat-section-header .cat-emoji { font-size: 20px; }
+
+/* Menu item card */
+.menu-item-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  background: #110e03;
+  border: 1px solid rgba(201,168,76,0.1);
+  margin-bottom: 10px;
+  transition: all .3s;
+  gap: 12px;
+}
+.menu-item-card:hover { border-color: rgba(201,168,76,0.35); background: #17120400; background: #171204; }
+.mic-info { flex: 1; }
+.mic-name { font-family: 'Playfair Display', serif; font-size: 15px; color: #f2ead8; font-weight: 700; margin-bottom: 3px; }
+.mic-desc { font-size: 11px; color: rgba(240,228,196,0.38); line-height: 1.5; margin-bottom: 6px; }
+.mic-price { font-family: 'Playfair Display', serif; font-size: 16px; color: #c9a84c; font-weight: 700; }
+.mic-badge { font-size: 8px; background: rgba(201,168,76,0.15); color: #c9a84c; padding: 2px 6px; letter-spacing: 1px; text-transform: uppercase; margin-left: 8px; border: 1px solid rgba(201,168,76,0.25); }
+
+/* Add to cart button */
+.add-btn {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #7a5010, #c9a84c);
+  border: none; cursor: pointer; color: #050300;
+  font-size: 18px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .25s; flex-shrink: 0;
+}
+.add-btn:hover { transform: scale(1.1); box-shadow: 0 4px 16px rgba(201,168,76,0.4); }
+
+/* Qty controls */
+.qty-ctrl { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
+.qty-btn {
+  width: 30px; height: 30px;
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.3);
+  color: #c9a84c; font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.qty-btn:hover { background: rgba(201,168,76,0.25); }
+.qty-num { width: 34px; text-align: center; font-size: 14px; font-weight: 600; color: #f2ead8; background: rgba(201,168,76,0.06); border-top: 1px solid rgba(201,168,76,0.3); border-bottom: 1px solid rgba(201,168,76,0.3); border-left: none; border-right: none; padding: 4px 0; }
+
+/* ── CART PANEL ── */
+.cart-header { margin-bottom: 16px; }
+.cart-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #c9a84c; margin-bottom: 4px; }
+.cart-subtitle { font-size: 11px; color: rgba(240,228,196,0.4); letter-spacing: 1px; }
+
+.cart-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 2rem;
+}
+.cart-empty-icon { font-size: 48px; margin-bottom: 12px; opacity: .4; }
+.cart-empty p { font-size: 13px; color: rgba(240,228,196,0.35); line-height: 1.7; }
+
+.cart-items { flex: 1; overflow-y: auto; margin-bottom: 12px; }
+.cart-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid rgba(201,168,76,0.08);
+  gap: 8px;
+}
+.ci-name { font-size: 13px; color: #f2ead8; font-weight: 500; flex: 1; }
+.ci-qty { font-size: 11px; color: rgba(240,228,196,0.4); }
+.ci-price { font-size: 13px; color: #c9a84c; font-weight: 600; white-space: nowrap; }
+.ci-remove { color: rgba(220,80,80,0.6); cursor: pointer; font-size: 14px; background: none; border: none; padding: 2px 4px; transition: color .2s; }
+.ci-remove:hover { color: #dc5050; }
+
+/* Cart summary */
+.cart-summary { border-top: 1px solid rgba(201,168,76,0.15); padding-top: 12px; margin-top: 4px; }
+.cs-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+.cs-label { color: rgba(240,228,196,0.5); }
+.cs-value { color: #f2ead8; }
+.cs-total { font-size: 16px; font-weight: 700; color: #c9a84c; border-top: 1px solid rgba(201,168,76,0.2); padding-top: 8px; margin-top: 4px; }
+
+/* Pincode checker */
+.pincode-check { margin: 12px 0; }
+.pincode-check label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(201,168,76,0.6); display: block; margin-bottom: 4px; }
+.pincode-row { display: flex; gap: 6px; }
+.pincode-row input { flex: 1; background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.2); color: #f2ead8; padding: 7px 10px; font-size: 13px; font-family: 'Montserrat', sans-serif; }
+.pincode-row input:focus { outline: none; border-color: rgba(201,168,76,0.5); }
+.pincode-check-btn { background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); color: #c9a84c; padding: 7px 12px; font-size: 11px; cursor: pointer; white-space: nowrap; font-family: 'Montserrat', sans-serif; }
+.pincode-result { font-size: 11px; margin-top: 5px; padding: 4px 8px; }
+.pincode-ok { background: rgba(40,167,69,0.12); color: #5cb85c; border-left: 2px solid #5cb85c; }
+.pincode-err { background: rgba(220,53,69,0.12); color: #e05a5a; border-left: 2px solid #e05a5a; }
+
+/* Place order btn */
+.place-order-btn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #7a5010, #b08030 35%, #e0c050 55%, #b08030 75%, #7a5010);
+  color: #050300; font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
+  transition: all .3s; margin-top: 10px;
+}
+.place-order-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.5); }
+.place-order-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* Checkout modal overlay */
+.checkout-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85); z-index: 9999;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.checkout-overlay.active { display: flex; }
+.checkout-modal {
+  background: #110e03;
+  border: 1px solid rgba(201,168,76,0.3);
+  width: 90%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  position: relative;
+}
+.checkout-modal::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #7a5010, #c9a84c, #e8d070, #c9a84c);
+}
+.modal-header {
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid rgba(201,168,76,0.12);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #c9a84c; }
+.modal-close { background: none; border: none; color: rgba(240,228,196,0.4); font-size: 22px; cursor: pointer; line-height: 1; padding: 0; }
+.modal-close:hover { color: #c9a84c; }
+.modal-body { padding: 20px 24px; }
+.modal-section-title { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(201,168,76,0.55); margin-bottom: 12px; margin-top: 18px; padding-bottom: 4px; border-bottom: 1px solid rgba(201,168,76,0.1); }
+.modal-section-title:first-child { margin-top: 0; }
+
+/* Form inputs inside modal */
+.dform-input {
+  background: rgba(201,168,76,0.05) !important;
+  border: 1px solid rgba(201,168,76,0.2) !important;
+  color: #f0e6cc !important;
+  border-radius: 0 !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-size: 13px !important;
+}
+.dform-input:focus {
+  background: rgba(201,168,76,0.08) !important;
+  border-color: rgba(201,168,76,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.1) !important;
+  color: #f0e6cc !important;
+}
+.dform-input option { background: #110e03; color: #f0e6cc; }
+.form-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(201,168,76,0.7); margin-bottom: 4px; }
+
+/* Payment options */
+.payment-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+.pay-opt {
+  padding: 10px 8px; text-align: center;
+  border: 1px solid rgba(201,168,76,0.15);
+  cursor: pointer; transition: all .25s;
+  background: rgba(201,168,76,0.04);
+}
+.pay-opt.selected, .pay-opt:hover { border-color: rgba(201,168,76,0.55); background: rgba(201,168,76,0.1); }
+.pay-opt i { display: block; font-size: 20px; margin-bottom: 4px; color: #c9a84c; }
+.pay-opt span { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: rgba(240,228,196,0.6); }
+
+/* Order summary in modal */
+.modal-order-summary { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.12); padding: 12px 14px; margin-bottom: 16px; }
+.mos-item { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+.mos-name { color: rgba(240,228,196,0.7); }
+.mos-price { color: #c9a84c; }
+.mos-total { font-size: 15px; font-weight: 700; color: #c9a84c; border-top: 1px solid rgba(201,168,76,0.15); padding-top: 8px; margin-top: 4px; }
+.mos-total .mos-name { color: #f2ead8; }
+
+.submit-order-btn {
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, #7a5010, #b08030 35%, #e0c050 55%, #b08030 75%, #7a5010);
+  color: #050300; font-size: 12px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
+  transition: all .3s; margin-top: 16px;
+}
+.submit-order-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(201,168,76,0.5); }
+
+/* Track order link */
+.track-link { text-align: center; margin-top: 10px; }
+.track-link a { font-size: 11px; color: rgba(201,168,76,0.6); text-decoration: none; letter-spacing: 1px; }
+.track-link a:hover { color: #c9a84c; }
+
+@media(max-width: 900px) {
+  .delivery-layout { grid-template-columns: 1fr; }
+  .cart-panel { position: fixed; bottom: 0; left: 0; right: 0; height: auto; max-height: 50vh; z-index: 100; border-top: 2px solid rgba(201,168,76,0.3); }
+  .menu-panel { padding-bottom: 320px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delivery-page">
+
+  <!-- Delivery Banner -->
+  <div class="delivery-banner">
+    <div class="container">
+      <div class="db-info">
+        <div class="db-badge"><i class="bi bi-bicycle"></i> Home Delivery</div>
+        <div class="db-text"><strong>40 min</strong> avg delivery &nbsp;·&nbsp; <strong>₹20</strong> delivery charge &nbsp;·&nbsp; Min order <strong>₹80</strong></div>
+        <div class="db-text"><i class="bi bi-geo-alt" style="color:#c9a84c;"></i> Delivering across <strong>Beed, Maharashtra</strong></div>
+      </div>
+      <a href="{% url 'track_order' %}" style="font-size:11px;color:#c9a84c;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;border:1px solid rgba(201,168,76,0.3);padding:6px 14px;">
+        <i class="bi bi-geo-alt-fill"></i> Track Order
+      </a>
+    </div>
+  </div>
+
+  <div class="container-fluid px-0">
+    <div class="delivery-layout">
+
+      <!-- ══ MENU PANEL ══ -->
+      <div class="menu-panel">
+        <div style="margin-bottom:20px;">
+          <h2 style="font-family:'Playfair Display',serif;font-size:26px;color:#c9a84c;margin-bottom:4px;">Order Online</h2>
+          <p style="font-size:12px;color:rgba(240,228,196,0.4);">Fresh food delivered to your doorstep in 30–45 minutes</p>
+        </div>
+
+        <!-- Category nav -->
+        <div class="cat-nav" id="catNav">
+          <a href="#cat-all" class="cat-pill active" onclick="filterCat('all',this)">🍽️ All</a>
+          {% for cat_name, data in category_data.items %}
+          <a href="#cat-{{ data.key }}" class="cat-pill" onclick="filterCat('{{ data.key }}',this)">
+            {{ data.emoji }} {{ cat_name }}
+          </a>
+          {% endfor %}
+        </div>
+
+        <!-- Menu items by category -->
+        {% for cat_name, data in category_data.items %}
+        <div class="cat-section" id="cat-{{ data.key }}" data-cat="{{ data.key }}">
+          <div class="cat-section-header">
+            <span class="cat-emoji">{{ data.emoji }}</span>
+            {{ cat_name }}
+          </div>
+          {% for item in data.items %}
+          <div class="menu-item-card" data-cat="{{ item.category }}" id="mic-{{ item.id }}">
+            <div class="mic-info">
+              <div class="mic-name">
+                {{ item.name }}
+                {% if item.is_bestseller %}<span class="mic-badge">✦ Best</span>{% endif %}
+              </div>
+              {% if item.description %}
+              <div class="mic-desc">{{ item.description|truncatechars:80 }}</div>
+              {% endif %}
+              <div class="mic-price">₹{{ item.price }}</div>
+            </div>
+            <div id="ctrl-{{ item.id }}">
+              <button class="add-btn" onclick="addToCart({{ item.id }}, '{{ item.name|escapejs }}', {{ item.price }})" title="Add to cart">+</button>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+
+        {% if not category_data %}
+        <div style="text-align:center;padding:3rem;color:rgba(240,228,196,0.35);">
+          <div style="font-size:3rem;margin-bottom:1rem;">🍽️</div>
+          <p>No menu items available right now. Please check back soon!</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- ══ CART PANEL ══ -->
+      <div class="cart-panel" id="cartPanel">
+        <div class="cart-header">
+          <div class="cart-title"><i class="bi bi-bag-heart"></i> Your Order</div>
+          <div class="cart-subtitle" id="cartCount">0 items in cart</div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="cart-empty" id="cartEmpty">
+          <div class="cart-empty-icon">🛒</div>
+          <p>Your cart is empty.<br>Add items from the menu to get started!</p>
+        </div>
+
+        <!-- Cart items list -->
+        <div class="cart-items" id="cartItems" style="display:none;"></div>
+
+        <!-- Cart summary + pincode check -->
+        <div id="cartFooter" style="display:none;">
+          <div class="pincode-check">
+            <label><i class="bi bi-geo-alt"></i> Check Delivery to Your Area</label>
+            <div class="pincode-row">
+              <input type="text" id="pincodeInput" placeholder="Enter pincode" maxlength="10">
+              <button class="pincode-check-btn" onclick="checkPincode()">Check</button>
+            </div>
+            <div id="pincodeResult"></div>
+          </div>
+
+          <div class="cart-summary">
+            <div class="cs-row"><span class="cs-label">Subtotal</span><span class="cs-value" id="subtotalVal">₹0</span></div>
+            <div class="cs-row"><span class="cs-label">Delivery Charge</span><span class="cs-value" id="deliveryVal">₹30</span></div>
+            <div class="cs-row"><span class="cs-label">Taxes & Fees</span><span class="cs-value">₹0</span></div>
+            <div class="cs-row cs-total"><span class="cs-label">Total</span><span class="cs-value" id="totalVal">₹0</span></div>
+          </div>
+
+          <button class="place-order-btn" id="placeOrderBtn" onclick="openCheckout()">
+            <i class="bi bi-bag-check"></i> &nbsp; Proceed to Checkout
+          </button>
+
+          <div class="track-link">
+            <a href="{% url 'track_order' %}"><i class="bi bi-search"></i> Track an existing order</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHECKOUT MODAL ══ -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="bi bi-bag-check"></i> Complete Your Order</div>
+      <button class="modal-close" onclick="closeCheckout()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Order summary -->
+      <div class="modal-section-title">Order Summary</div>
+      <div class="modal-order-summary" id="modalSummary"></div>
+
+      <form method="post" action="{% url 'place_order' %}" id="checkoutForm">
+        {% csrf_token %}
+        <input type="hidden" name="cart_data" id="cartDataInput">
+
+        <!-- Delivery Details -->
+        <div class="modal-section-title">Delivery Details</div>
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label">Full Name *</label>
+            {{ form.name }}
+          </div>
+          <div class="col-6">
+            <label class="form-label">Phone *</label>
+            {{ form.phone }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Email (optional)</label>
+            {{ form.email }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Delivery Address *</label>
+            {{ form.address }}
+          </div>
+          <div class="col-6">
+            <label class="form-label">Landmark</label>
+            {{ form.landmark }}
+          </div>
+          <div class="col-6">
+            <label class="form-label">Pincode *</label>
+            {{ form.pincode }}
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="modal-section-title">Payment Method</div>
+        <div class="payment-opts">
+          <div class="pay-opt selected" onclick="selectPayment('cod', this)">
+            <i class="bi bi-cash-coin"></i>
+            <span>Cash on Delivery</span>
+          </div>
+          <div class="pay-opt" onclick="selectPayment('upi', this)">
+            <i class="bi bi-qr-code-scan"></i>
+            <span>UPI / QR Code</span>
+          </div>
+          <div class="pay-opt" onclick="selectPayment('card', this)">
+            <i class="bi bi-credit-card"></i>
+            <span>Card on Delivery</span>
+          </div>
+        </div>
+        <input type="hidden" name="payment_method" id="paymentMethodInput" value="cod">
+
+        <!-- QR Code Section — shows when UPI selected -->
+        <div id="qrSection" style="display:none;margin-top:16px;">
+          <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.25);padding:20px;text-align:center;">
+
+            {% if cafe_settings.qr_code %}
+            <!-- QR Code Image from Admin -->
+            <div style="margin-bottom:12px;">
+              <img src="{{ cafe_settings.qr_code.url }}"
+                   alt="UPI QR Code"
+                   style="width:200px;height:200px;object-fit:contain;border:2px solid rgba(201,168,76,0.4);padding:8px;background:#fff;" />
+            </div>
+            {% else %}
+            <!-- Placeholder when no QR uploaded -->
+            <div style="width:200px;height:200px;border:2px dashed rgba(201,168,76,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 12px;background:rgba(201,168,76,0.03);">
+              <i class="bi bi-qr-code" style="font-size:48px;color:rgba(201,168,76,0.4);"></i>
+              <span style="font-size:10px;color:rgba(201,168,76,0.4);margin-top:8px;letter-spacing:1px;">QR Code Coming Soon</span>
+            </div>
+            {% endif %}
+
+            {% if cafe_settings.upi_id %}
+            <div style="font-size:13px;color:#f2ead8;margin-bottom:4px;">
+              <i class="bi bi-phone" style="color:#c9a84c;"></i>
+              UPI ID: <strong style="color:#c9a84c;">{{ cafe_settings.upi_id }}</strong>
+            </div>
+            {% endif %}
+
+            {% if cafe_settings.upi_name %}
+            <div style="font-size:12px;color:rgba(240,228,196,0.5);margin-bottom:8px;">
+              Pay to: <strong>{{ cafe_settings.upi_name }}</strong>
+            </div>
+            {% endif %}
+
+            <div style="font-size:11px;color:rgba(240,228,196,0.4);letter-spacing:1px;margin-top:8px;padding:8px 12px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);">
+              <i class="bi bi-info-circle" style="color:#c9a84c;"></i>
+              {{ cafe_settings.payment_note|default:"Scan & Pay using GPay / PhonePe / Paytm / Any UPI App" }}
+            </div>
+
+            <div style="font-size:11px;color:rgba(240,168,76,0.7);margin-top:10px;font-style:italic;">
+              ⚠️ Screenshot leke rakhna — order place karne ke baad payment confirm karein
+            </div>
+          </div>
+        </div>
+
+        <!-- Special Note -->
+        <div class="modal-section-title" style="margin-top:16px;">Special Instructions</div>
+        {{ form.special_note }}
+
+        <button type="submit" class="submit-order-btn" onclick="prepareSubmit()">
+          <i class="bi bi-bag-heart-fill"></i> &nbsp; Place Order Now
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════
+//  CART STATE
+// ════════════════════════════════
+let cart = {};      // { itemId: { name, price, qty } }
+let deliveryCharge = 30;
+
+function addToCart(id, name, price) {
+  if (cart[id]) {
+    cart[id].qty += 1;
+  } else {
+    cart[id] = { name, price: parseFloat(price), qty: 1 };
+  }
+  updateCartUI();
+  updateItemControl(id);
+  showCartToast(name);
+}
+
+function changeQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id].qty += delta;
+  if (cart[id].qty <= 0) {
+    delete cart[id];
+    // Restore add button
+    const ctrl = document.getElementById('ctrl-' + id);
+    if (ctrl) ctrl.innerHTML = `<button class="add-btn" onclick="addToCart(${id},'${ctrl.dataset.name}',${ctrl.dataset.price})" title="Add to cart">+</button>`;
+  }
+  updateCartUI();
+  if (cart[id]) updateItemControl(id);
+}
+
+function updateItemControl(id) {
+  const item = cart[id];
+  const ctrl = document.getElementById('ctrl-' + id);
+  const mic = document.getElementById('mic-' + id);
+  if (!ctrl) return;
+  // Save name/price as data
+  const name = item ? item.name : '';
+  const price = item ? item.price : 0;
+  ctrl.dataset.name = name;
+  ctrl.dataset.price = price;
+  if (item) {
+    ctrl.innerHTML = `
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty(${id},-1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${id},1)">+</button>
+      </div>`;
+  } else {
+    // need to get name from mic card
+    const nameEl = document.querySelector(`#mic-${id} .mic-name`);
+    const priceEl = document.querySelector(`#mic-${id} .mic-price`);
+    const n = nameEl ? nameEl.textContent.trim().replace(/✦.*Best.*/,'').trim() : '';
+    const p = priceEl ? priceEl.textContent.replace('₹','').trim() : 0;
+    ctrl.innerHTML = `<button class="add-btn" onclick="addToCart(${id},'${n}',${p})" title="Add to cart">+</button>`;
+  }
+}
+
+function updateCartUI() {
+  const keys = Object.keys(cart);
+  const empty = document.getElementById('cartEmpty');
+  const items = document.getElementById('cartItems');
+  const footer = document.getElementById('cartFooter');
+  const count = document.getElementById('cartCount');
+
+  const totalQty = keys.reduce((s, k) => s + cart[k].qty, 0);
+  const subtotal = keys.reduce((s, k) => s + cart[k].price * cart[k].qty, 0);
+  const total = subtotal + deliveryCharge;
+
+  count.textContent = `${totalQty} item${totalQty !== 1 ? 's' : ''} in cart`;
+
+  if (keys.length === 0) {
+    empty.style.display = 'flex';
+    items.style.display = 'none';
+    footer.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  items.style.display = 'block';
+  footer.style.display = 'block';
+
+  // Render cart items
+  items.innerHTML = keys.map(id => `
+    <div class="cart-item">
+      <div>
+        <div class="ci-name">${cart[id].name}</div>
+        <div class="ci-qty">×${cart[id].qty} @ ₹${cart[id].price}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="ci-price">₹${(cart[id].price * cart[id].qty).toFixed(0)}</span>
+        <button class="ci-remove" onclick="removeFromCart(${id})" title="Remove">×</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('subtotalVal').textContent = '₹' + subtotal.toFixed(0);
+  document.getElementById('deliveryVal').textContent  = '₹' + deliveryCharge;
+  document.getElementById('totalVal').textContent     = '₹' + total.toFixed(0);
+}
+
+function removeFromCart(id) {
+  delete cart[id];
+  updateCartUI();
+  updateItemControl(id);
+}
+
+// ── Category filter ──
+function filterCat(cat, el) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.cat-section').forEach(s => {
+    s.style.display = (cat === 'all' || s.dataset.cat === cat) ? 'block' : 'none';
+  });
+}
+
+// ── Pincode check ──
+function checkPincode() {
+  const pin = document.getElementById('pincodeInput').value.trim();
+  const result = document.getElementById('pincodeResult');
+  if (!pin || pin.length < 6) {
+    result.className = 'pincode-result pincode-err';
+    result.textContent = 'Please enter a valid 6-digit pincode.';
+    return;
+  }
+  fetch(`{% url 'check_delivery_area' %}?pincode=${pin}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.available) {
+        deliveryCharge = parseFloat(data.charge);
+        result.className = 'pincode-result pincode-ok';
+        result.innerHTML = `✓ We deliver to <strong>${data.area}</strong>! Delivery charge: ₹${data.charge} · Min order: ₹${data.min_order}`;
+        updateCartUI();
+      } else {
+        result.className = 'pincode-result pincode-err';
+        result.textContent = '✗ Sorry, we don\'t deliver to this area yet.';
+      }
+    })
+    .catch(() => {
+      result.className = 'pincode-result pincode-ok';
+      result.textContent = '✓ We deliver to your area!';
+    });
+}
+
+// ── Checkout modal ──
+function openCheckout() {
+  const keys = Object.keys(cart);
+  if (!keys.length) return;
+
+  // Build summary
+  const subtotal = keys.reduce((s, k) => s + cart[k].price * cart[k].qty, 0);
+  const total = subtotal + deliveryCharge;
+  const summaryEl = document.getElementById('modalSummary');
+  summaryEl.innerHTML = keys.map(id =>
+    `<div class="mos-item"><span class="mos-name">${cart[id].name} ×${cart[id].qty}</span><span class="mos-price">₹${(cart[id].price * cart[id].qty).toFixed(0)}</span></div>`
+  ).join('') +
+  `<div class="mos-item"><span class="mos-name" style="color:rgba(240,228,196,.45);">Delivery</span><span class="mos-price" style="color:rgba(240,228,196,.45);">₹${deliveryCharge}</span></div>` +
+  `<div class="mos-item mos-total"><span class="mos-name">Total Payable</span><span class="mos-price">₹${total.toFixed(0)}</span></div>`;
+
+  document.getElementById('checkoutOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function selectPayment(method, el) {
+  document.querySelectorAll('.pay-opt').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('paymentMethodInput').value = method;
+
+  // Show QR code section only when UPI selected
+  const qrSection = document.getElementById('qrSection');
+  if (qrSection) {
+    qrSection.style.display = (method === 'upi') ? 'block' : 'none';
+  }
+}
+
+function prepareSubmit() {
+  const cartArr = Object.keys(cart).map(id => ({ id: parseInt(id), qty: cart[id].qty }));
+  document.getElementById('cartDataInput').value = JSON.stringify(cartArr);
+}
+
+// ── Toast notification ──
+function showCartToast(name) {
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1200;border:1px solid rgba(201,168,76,0.5);color:#c9a84c;padding:10px 20px;font-size:12px;font-family:Montserrat,sans-serif;letter-spacing:1px;z-index:9999;animation:fadeIn .3s ease;white-space:nowrap;';
+  t.innerHTML = `✦ ${name} added to cart`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+// Close modal clicking outside
+document.getElementById('checkoutOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeCheckout();
+});
+</script>
+{% endblock %}

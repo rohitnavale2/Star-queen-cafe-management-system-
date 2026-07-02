@@ -1,0 +1,287 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receipt #{{ order.order_number }} — Star Queen Cafe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f5f0e8;
+      color: #1a1200;
+      padding: 20px;
+    }
+
+    .receipt {
+      max-width: 420px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #d4b866;
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    /* Header */
+    .r-header {
+      background: linear-gradient(135deg, #1a1200, #2a1c00);
+      color: #c9a84c;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .r-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+    .r-tagline { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(201,168,76,0.6); margin-bottom: 6px; }
+    .r-address { font-size: 10px; color: rgba(201,168,76,0.5); line-height: 1.6; }
+
+    /* Receipt info */
+    .r-info {
+      background: #fffdf5;
+      border-bottom: 1px dashed #d4b866;
+      border-top: 1px dashed #d4b866;
+      padding: 14px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .r-info-item label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: #888; display: block; margin-bottom: 2px; }
+    .r-info-item span { font-size: 12px; font-weight: 600; color: #1a1200; }
+
+    /* Status badge */
+    .r-status {
+      text-align: center;
+      padding: 10px;
+      background: #f0faf0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .status-paid { background: #e8f5e9; color: #2e7d32; }
+    .status-pending { background: #fff8e1; color: #f57f17; }
+    .status-cod { background: #e3f2fd; color: #1565c0; }
+    .badge {
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Items */
+    .r-items { padding: 16px 20px; }
+    .r-items-header {
+      font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+      color: #888; margin-bottom: 10px; padding-bottom: 6px;
+      border-bottom: 1px solid #eee;
+      display: grid; grid-template-columns: 1fr auto auto;
+    }
+    .r-item {
+      display: grid; grid-template-columns: 1fr auto auto;
+      gap: 8px; padding: 6px 0;
+      border-bottom: 1px dotted #f0e8cc;
+      font-size: 12px;
+    }
+    .r-item:last-child { border-bottom: none; }
+    .ri-name { color: #1a1200; }
+    .ri-qty { color: #888; text-align: center; }
+    .ri-price { color: #7a5010; font-weight: 600; text-align: right; }
+
+    /* Totals */
+    .r-totals { padding: 12px 20px; background: #fffdf5; border-top: 1px dashed #d4b866; }
+    .r-total-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; }
+    .rt-label { color: #666; }
+    .rt-value { color: #1a1200; font-weight: 500; }
+    .r-grand-total {
+      display: flex; justify-content: space-between;
+      font-size: 16px; font-weight: 700;
+      border-top: 2px solid #c9a84c;
+      padding-top: 10px; margin-top: 6px;
+      color: #1a1200;
+    }
+    .r-grand-total .rt-value { color: #7a5010; font-size: 18px; }
+
+    /* Payment info */
+    .r-payment { padding: 12px 20px; border-top: 1px solid #f0e8cc; }
+    .r-payment-method { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .pm-icon { font-size: 20px; }
+
+    /* Delivery info */
+    .r-delivery { padding: 12px 20px; border-top: 1px solid #f0e8cc; font-size: 11px; color: #555; line-height: 1.7; }
+    .r-delivery strong { color: #1a1200; }
+
+    /* Thank you footer */
+    .r-footer {
+      background: linear-gradient(135deg, #1a1200, #2a1c00);
+      padding: 16px 20px;
+      text-align: center;
+    }
+    .r-footer p { color: rgba(201,168,76,0.7); font-size: 10px; letter-spacing: 1px; margin-bottom: 4px; }
+    .r-footer .thankyou { font-family: 'Playfair Display', serif; font-size: 16px; color: #c9a84c; font-style: italic; }
+
+    /* Print / Download buttons */
+    .r-actions {
+      display: flex; gap: 10px; justify-content: center;
+      padding: 16px; background: #f5f0e8;
+      border-top: 1px solid #d4b866;
+    }
+    .btn-print {
+      padding: 10px 24px; font-size: 11px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      background: linear-gradient(135deg, #7a5010, #c9a84c);
+      color: #fff; border: none; cursor: pointer;
+    }
+    .btn-back {
+      padding: 10px 24px; font-size: 11px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #7a5010;
+      background: transparent; border: 1px solid #c9a84c;
+      cursor: pointer; text-decoration: none; display: inline-block;
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .r-actions { display: none; }
+      .receipt { box-shadow: none; border: none; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="receipt">
+
+  <!-- Header -->
+  <div class="r-header">
+    <div class="r-logo">⭐ Star Queen Cafe</div>
+    <div class="r-tagline">The Family Cafe & Bistro</div>
+    <div class="r-address">
+      Sarada Capital, Near Kajal Sweets<br>
+      DP Road, Beed, Maharashtra — 431122<br>
+      {% if cafe_settings.cafe_phone %}📞 {{ cafe_settings.cafe_phone }}{% endif %}
+    </div>
+  </div>
+
+  <!-- Payment Status -->
+  <div class="r-status {% if order.payment_method == 'upi' %}status-paid{% elif order.payment_method == 'cod' %}status-cod{% else %}status-pending{% endif %}">
+    {% if order.payment_method == 'upi' %}
+      <span class="badge" style="background:#2e7d32;color:#fff;">✓ Payment Successful</span>
+    {% elif order.payment_method == 'cod' %}
+      <span class="badge" style="background:#1565c0;color:#fff;">💵 Cash on Delivery</span>
+    {% else %}
+      <span class="badge" style="background:#f57f17;color:#fff;">⏳ Payment Pending</span>
+    {% endif %}
+  </div>
+
+  <!-- Order Info -->
+  <div class="r-info">
+    <div class="r-info-item">
+      <label>Order Number</label>
+      <span>#{{ order.order_number }}</span>
+    </div>
+    <div class="r-info-item">
+      <label>Date & Time</label>
+      <span>{{ order.created_at|date:"d M Y, h:i A" }}</span>
+    </div>
+    <div class="r-info-item">
+      <label>Customer</label>
+      <span>{{ order.name }}</span>
+    </div>
+    <div class="r-info-item">
+      <label>Phone</label>
+      <span>{{ order.phone }}</span>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="r-items">
+    <div class="r-items-header">
+      <span>Item</span>
+      <span style="text-align:center;">Qty</span>
+      <span style="text-align:right;">Price</span>
+    </div>
+    {% for item in order_items %}
+    <div class="r-item">
+      <span class="ri-name">{{ item.menu_item.name }}</span>
+      <span class="ri-qty">×{{ item.quantity }}</span>
+      <span class="ri-price">₹{{ item.line_total }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Totals -->
+  <div class="r-totals">
+    <div class="r-total-row">
+      <span class="rt-label">Subtotal</span>
+      <span class="rt-value">₹{{ order.subtotal }}</span>
+    </div>
+    <div class="r-total-row">
+      <span class="rt-label">Delivery Charge</span>
+      <span class="rt-value">₹{{ order.delivery_charge }}</span>
+    </div>
+    {% if order.discount > 0 %}
+    <div class="r-total-row">
+      <span class="rt-label">Discount</span>
+      <span style="color:#2e7d32;font-weight:600;">-₹{{ order.discount }}</span>
+    </div>
+    {% endif %}
+    <div class="r-grand-total">
+      <span>Total</span>
+      <span class="rt-value">₹{{ order.total }}</span>
+    </div>
+  </div>
+
+  <!-- Payment Method -->
+  <div class="r-payment">
+    <div class="r-payment-method">
+      {% if order.payment_method == 'upi' %}
+        <span class="pm-icon">📱</span>
+        <div>
+          <strong style="font-size:12px;">Paid via UPI</strong><br>
+          <span style="font-size:10px;color:#888;">
+            {% if payment_info and payment_info.razorpay_payment_id %}
+              Payment ID: {{ payment_info.razorpay_payment_id }}
+            {% endif %}
+          </span>
+        </div>
+      {% elif order.payment_method == 'cod' %}
+        <span class="pm-icon">💵</span>
+        <div>
+          <strong style="font-size:12px;">Cash on Delivery</strong><br>
+          <span style="font-size:10px;color:#888;">Pay ₹{{ order.total }} at the time of delivery</span>
+        </div>
+      {% else %}
+        <span class="pm-icon">💳</span>
+        <div><strong style="font-size:12px;">Card on Delivery</strong></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Delivery Address -->
+  <div class="r-delivery">
+    <strong>📍 Delivery Address:</strong><br>
+    {{ order.address }}
+    {% if order.landmark %}, {{ order.landmark }}{% endif %}<br>
+    Pincode: {{ order.pincode }}
+    {% if order.special_note %}
+    <br><strong>Note:</strong> {{ order.special_note }}
+    {% endif %}
+  </div>
+
+  <!-- Footer -->
+  <div class="r-footer">
+    <div class="thankyou">"Thank you for your order!"</div>
+    <p style="margin-top:6px;">Estimated delivery: {{ order.estimated_time }} minutes</p>
+    <p>Star Queen Cafe, Beed · The Family Cafe &amp; Bistro</p>
+  </div>
+
+  <!-- Action Buttons (hidden on print) -->
+  <div class="r-actions">
+    <button class="btn-print" onclick="window.print()">🖨️ Print Receipt</button>
+    <a href="{% url 'order_confirmation' order.order_number %}" class="btn-back">← Back</a>
+  </div>
+
+</div>
+
+</body>
+</html>

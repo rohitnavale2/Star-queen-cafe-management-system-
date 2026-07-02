@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Star Queen Cafe — The Family Cafe & Bistro, Beed{% endblock %}</title>
+  <meta name="description" content="Star Queen Cafe — The Family Cafe & Bistro in Beed, Maharashtra. Delicious food, refreshing drinks, unforgettable experience.">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'cafe/css/style.css' %}">
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+        <img src="{% static 'cafe/img/logo.png' %}" alt="Star Queen Cafe Logo" class="navbar-logo">
+        <div>
+          Star Queen Cafe
+          <span>The Family Cafe & Bistro · Beed</span>
+        </div>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'menu' %}active{% endif %}" href="{% url 'menu' %}">Menu</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'gallery' %}active{% endif %}" href="{% url 'gallery' %}">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'events' %}active{% endif %}" href="{% url 'events' %}">Events</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'visit' %}active{% endif %}" href="{% url 'visit' %}">Visit Us</a></li>
+          <li class="nav-item ms-lg-2">
+            <a href="{% url 'delivery_home' %}" style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-decoration:none;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,#c9a84c,#e8d070);color:#050300;margin-right:6px;" title="Order food for home delivery">
+              <i class="bi bi-bicycle"></i> <span>Order Delivery</span>
+            </a>
+          </li>
+          <li class="nav-item ms-lg-1">
+            <a class="btn-gold py-2 px-3 d-inline-block" href="{% url 'reservation' %}" style="font-size:0.7rem;letter-spacing:2px;text-decoration:none;">
+              <span>Reserve a Table</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE CONTENT -->
+  {% block content %}{% endblock %}
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <img src="{% static 'cafe/img/logo.png' %}" alt="Star Queen Cafe" style="width:70px;height:70px;object-fit:cover;object-position:center 8%;border-radius:50%;border:1.5px solid rgba(201,168,76,0.45);background:#100c02;box-shadow:0 0 14px rgba(201,168,76,0.25);">
+            <div>
+              <div class="footer-brand">Star Queen Cafe</div>
+              <div class="footer-tagline">The Family Cafe & Bistro</div>
+            </div>
+          </div>
+          <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.8;margin-bottom:1.5rem;">
+            A warm family destination in the heart of Beed, Maharashtra. Where every meal is a celebration and every guest is family.
+          </p>
+          <div class="social-links">
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-facebook"></i></a>
+            <a href="#"><i class="bi bi-whatsapp"></i></a>
+            <a href="#"><i class="bi bi-youtube"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-6">
+          <div class="footer-heading">Quick Links</div>
+          <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'menu' %}">Our Menu</a></li>
+            <li><a href="{% url 'gallery' %}">Gallery</a></li>
+            <li><a href="{% url 'events' %}">Events</a></li>
+            <li><a href="{% url 'visit' %}">Visit Us</a></li>
+            <li><a href="{% url 'reservation' %}">Reservations</a></li>
+            <li><a href="{% url 'delivery_home' %}">Order Delivery</a></li>
+            <li><a href="{% url 'track_order' %}">Track Order</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3 col-6">
+          <div class="footer-heading">Opening Hours</div>
+          <div class="hours-item">
+            <span class="hours-day">Mon – Thu</span>
+            <span class="hours-time">10:00 – 22:00</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Fri – Sat</span>
+            <span class="hours-time">10:00 – 23:00</span>
+          </div>
+          <div class="hours-item">
+            <span class="hours-day">Sunday</span>
+            <span class="hours-time">11:00 – 22:00</span>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <div class="footer-heading">Find Us</div>
+          <p style="color:var(--text-muted);font-size:0.85rem;line-height:1.9;">
+            <i class="bi bi-geo-alt" style="color:var(--gold);"></i>
+            Star Queen Cafe<br>
+            Sarada Capital, Near Kajal Sweets<br>
+            DP Road, Beed<br>
+            Maharashtra – 431122
+          </p>
+          <p style="color:var(--text-muted);font-size:0.85rem;margin-top:0.5rem;">
+            <i class="bi bi-telephone" style="color:var(--gold);"></i>
+            &nbsp;+91 XXXXX XXXXX
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span style="color:var(--gold);">⭐</span>
+        &nbsp;&copy; {% now "Y" %} Star Queen Cafe, Beed, Maharashtra. All Rights Reserved.
+        &nbsp;<span style="color:var(--gold);">⭐</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCROLL TO TOP -->
+  <button id="scrollTop"><i class="bi bi-chevron-up"></i></button>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{% static 'cafe/js/script.js' %}"></script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
