@@ -1,4 +1,4 @@
-# ⭐ Star Queen Cafe — Django Web Application
+# ⭐ Star Queen Cafe — Django Web Application.
 
 **The Family Cafe & Bistro | Beed, Maharashtra, India**
 
